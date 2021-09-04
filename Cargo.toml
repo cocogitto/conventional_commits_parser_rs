@@ -12,3 +12,5 @@ thiserror = "1.0.28"
 
 [dev-dependencies]
 spectral = "0.6.0"
+indoc = "1.0.3"
+

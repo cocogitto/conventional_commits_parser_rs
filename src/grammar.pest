@@ -1,27 +1,29 @@
-WHITESPACE = _{ " " }
 commit_type = { ASCII_ALPHA+ }
-scope_content = { ( !parent_right ~ ANY)+ }
-scope = {  parent_left ~ scope_content ~ parent_right }
-summary_content = { ANY+ }
+scope_content = ${ ( !parent_right ~ !WHITE_SPACE ~ ANY)+ }
+scope = {  (parent_left ~ scope_content ~ parent_right) }
+summary_content = { (!NEWLINE ~ ANY)+ }
 
 summary = { commit_type ~ scope? ~ breaking_change_mark? ~ separator ~ summary_content }
 
-message = {
-    (summary ~ NEWLINE+ ~ body ~ (NEWLINE+ ~ footer)*)
-    | (summary ~ (NEWLINE+ ~ footer)*)
-    | (summary ~ (NEWLINE+)*)
-}
+message = { summary ~ body? ~ footers? }
 
-body = { NEWLINE+ ~ ASCII_ALPHANUMERIC* }
-footer = { token ~ separator ~ ASCII_ALPHANUMERIC* }
+body = { blank_line ~ NEWLINE ~ body_content }
+body_content = { (!line_separator ~ ANY)+ }
 
-token = { breaking_change_footer
-    |  (commit_type ~ scope? ~ breaking_change_mark)
-    | (commit_type ~ breaking_change_mark)
-}
+footer = ${ token ~ token_separator ~ footer_content }
+footers = { blank_line ~ (NEWLINE ~ footer)* }
 
 breaking_change_footer = { "BREAKING CHANGE" | "BREAKING-CHANGE" }
 breaking_change_mark = { "!"? }
-separator = _{ ":" }
+token = ${ ( !token_separator ~ (  breaking_change_footer | ASCII_ALPHANUMERIC | "-"))* }
+token_separator = ${ ": " | " #" }
+footer_content = ${ ((!token_separator ~ !NEWLINE) ~ ANY)+ }
+
+
+
+separator = { ":" }
 parent_left = _{ "(" }
 parent_right = _{ ")" }
+WHITESPACE = _{ " " }
+blank_line = _{ NEWLINE ~ WHITESPACE*}
+line_separator = _{ NEWLINE ~ WHITESPACE* ~ NEWLINE}

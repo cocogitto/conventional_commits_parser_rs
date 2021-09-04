@@ -1,5 +1,5 @@
-use thiserror::Error;
 use crate::Rule;
+use thiserror::Error;
 
 #[derive(Error, Debug, Eq, PartialEq)]
 pub enum ParseError {
