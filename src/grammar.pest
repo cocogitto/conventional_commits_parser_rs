@@ -1,0 +1,27 @@
+WHITESPACE = _{ " " }
+commit_type = { ASCII_ALPHA+ }
+scope_content = { ( !parent_right ~ ANY)+ }
+scope = {  parent_left ~ scope_content ~ parent_right }
+summary_content = { ANY+ }
+
+summary = { commit_type ~ scope? ~ breaking_change_mark? ~ separator ~ summary_content }
+
+message = {
+    (summary ~ NEWLINE+ ~ body ~ (NEWLINE+ ~ footer)*)
+    | (summary ~ (NEWLINE+ ~ footer)*)
+    | (summary ~ (NEWLINE+)*)
+}
+
+body = { NEWLINE+ ~ ASCII_ALPHANUMERIC* }
+footer = { token ~ separator ~ ASCII_ALPHANUMERIC* }
+
+token = { breaking_change_footer
+    |  (commit_type ~ scope? ~ breaking_change_mark)
+    | (commit_type ~ breaking_change_mark)
+}
+
+breaking_change_footer = { "BREAKING CHANGE" | "BREAKING-CHANGE" }
+breaking_change_mark = { "!"? }
+separator = _{ ":" }
+parent_left = _{ "(" }
+parent_right = _{ ")" }
