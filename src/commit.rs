@@ -24,7 +24,7 @@ pub struct Footer {
     pub content: String,
 }
 
-#[derive(Debug, Eq, PartialEq, Default)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct CommitMessage {
     pub commit_type: CommitType,
     pub scope: Option<String>,
@@ -34,9 +34,24 @@ pub struct CommitMessage {
     pub is_breaking_change: bool,
 }
 
+impl Default for CommitMessage {
+    fn default() -> Self {
+        CommitMessage {
+            commit_type: Feature,
+            scope: None,
+            body: None,
+            footers: vec![],
+            summary: "".to_string(),
+            is_breaking_change: false,
+        }
+    }
+}
+
 impl CommitMessage {
-    pub(crate) fn set_breaking_change(&mut self) {
-        self.is_breaking_change = true
+    pub(crate) fn set_breaking_change(&mut self, pair: Pair<Rule>) {
+        if !pair.as_str().is_empty() {
+            self.is_breaking_change = true
+        }
     }
 
     pub(crate) fn set_summary_content(&mut self, pair: Pair<Rule>) {
@@ -77,6 +92,11 @@ impl CommitMessage {
     fn set_footer(&mut self, footer: Pair<Rule>) {
         let mut footer_pairs = footer.into_inner();
         let token = footer_pairs.next().unwrap().as_str().to_string();
+
+        if token == "BREAKING CHANGE" || token == "BREAKING-CHANGE" {
+            self.is_breaking_change = true;
+        }
+
         let _separator = footer_pairs.next().unwrap();
         let content = footer_pairs.next().unwrap().as_str().to_string();
 
