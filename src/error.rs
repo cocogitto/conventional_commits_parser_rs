@@ -72,7 +72,7 @@ impl From<PestError<Rule>> for ParseError {
                     })
                 } else {
                     ParseError::Other(ParseErrorHelper {
-                        message: "Unimplemented error".to_string(),
+                        message: "Unexpected parsing error".to_string(),
                         error: pest_error.clone(),
                     })
                 }
