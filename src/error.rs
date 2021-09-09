@@ -3,6 +3,7 @@ use pest::error::Error as PestError;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 
+/// Common conventional commit formatting errors are wrapped in this struct to produce an additional hint
 #[derive(Debug)]
 pub enum ParseError {
     MissingSeparator(ParseErrorHelper),
@@ -13,6 +14,7 @@ pub enum ParseError {
 }
 
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct ParseErrorHelper {
     pub message: String,
     pub error: PestError<Rule>,

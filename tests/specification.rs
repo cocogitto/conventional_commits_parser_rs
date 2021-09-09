@@ -48,6 +48,16 @@ fn parsing_a_commit_type_without_colon_separator_should_fail() {
 }
 
 #[test]
+#[should_panic(expected = "Missing `:` after commit type")]
+fn parsing_a_commit_type_with_whitespace_should_fail() {
+    // Arrange
+    let commit_message = "feat toto: va à la plage";
+
+    // Act
+    parse(commit_message).unwrap();
+}
+
+#[test]
 fn commits_with_feature_type_and_breaking_change_mark() {
     // Arrange
     let commit_message = "feat!: toto va à la plage";
@@ -157,7 +167,7 @@ fn commits_with_body() {
         "ci(the_scope)!: the fix
 
     This is a body containing special char like / and \\ and also
-    Newline. Punctuation and special chars: ? , ; : # ...
+    Newline. Punctuation and special chars ? , ; ...
     Number is something you can have to ! 1 2 .. 42"
     );
 
@@ -169,8 +179,8 @@ fn commits_with_body() {
         parsed,
         indoc!(
             "This is a body containing special char like / and \\ and also
-        Newline. Punctuation and special chars: ? , ; : # ...
-        Number is something you can have to ! 1 2 .. 42"
+            Newline. Punctuation and special chars ? , ; ...
+            Number is something you can have to ! 1 2 .. 42"
         ),
     );
 
