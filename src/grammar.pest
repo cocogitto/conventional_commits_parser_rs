@@ -11,8 +11,8 @@ scope_content = ${ ( !parent_right ~ !parent_left ~ !NEWLINE ~ ANY)+ }
 
 
 // [optional body]
-body = { (blank_line ~ !footer ~ body_content) }
-body_content = { (!blank_line ~ ANY)+ }
+body = { (blank_line ~ body_content) }
+body_content = { (!footer ~ ANY)+ }
 
 // [optional footer(s)]
 footers = { blank_line ~ footer* }
