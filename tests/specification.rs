@@ -1,8 +1,12 @@
 // These parts of the specification depends on the end user and are no testable on our side
+
 // 2. The type feat MUST be used when a commit adds a new feature to your application or library.
 // 3. The type fix MUST be used when a commit represents a bug fix for your application.
 // 11. Breaking changes MUST be indicated in the type/scope prefix of a commit, or as an entry in the footer.
-
+// 13. If included in the type/scope prefix, breaking changes MUST be indicated by a ! immediately before the :.
+//     If ! is used, BREAKING CHANGE: MAY be omitted from the footer section, and the commit description
+//     SHALL be used to describe the breaking change.
+// 14. Types other than feat and fix MAY be used in your commit messages, e.g., docs: updated ref docs.
 use conventional_commit_parser::commit::{CommitType, Footer};
 use conventional_commit_parser::parse;
 use indoc::indoc;
@@ -348,4 +352,18 @@ fn lower_case_breaking_change_footer_fails() {
     breaking change: oops");
 
     parse(commit_message).unwrap();
+}
+
+// 15. The units of information that make up Conventional Commits MUST NOT be treated as case sensitive
+// by implementors, with the exception of BREAKING CHANGE which MUST be uppercase.
+#[test]
+fn commits_with_camel_case_feature_type() {
+    // Arrange
+    let commit_message = "Feat: toto va à la plage";
+
+    // Act
+    let parsed = &parse(commit_message);
+
+    // Assert
+    assert_commit_type(parsed, CommitType::Feature);
 }

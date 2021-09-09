@@ -106,7 +106,7 @@ impl CommitMessage {
 
 impl From<&str> for CommitType {
     fn from(commit_type: &str) -> Self {
-        match commit_type {
+        match commit_type.to_ascii_lowercase().as_str() {
             "feat" => Feature,
             "fix" => BugFix,
             "chore" => Chore,
