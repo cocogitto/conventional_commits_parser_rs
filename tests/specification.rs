@@ -367,3 +367,18 @@ fn commits_with_camel_case_feature_type() {
     // Assert
     assert_commit_type(parsed, CommitType::Feature);
 }
+
+// 16. BREAKING-CHANGE MUST be synonymous with BREAKING CHANGE, when used as a token in a footer.
+#[test]
+fn breaking_change_with_dash() {
+    // Arrange
+    let commit_message = indoc!(
+        "chore: a commit
+
+    BREAKING-CHANGE: message"
+    );
+
+    let parsed = parse(commit_message);
+
+    assert_breaking_change(&parsed);
+}
