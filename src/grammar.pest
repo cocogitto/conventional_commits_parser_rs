@@ -15,12 +15,12 @@ body = { (continuation ~ !footer ~ body_content) }
 body_content = { (!line_separator ~ ANY)+ }
 
 // [optional footer(s)]
-footers = { blank_line ~ (NEWLINE ~ footer)* }
-footer = ${ token ~ token_separator ~ footer_content }
+footers = { continuation ~ footer* }
+footer = ${ NEWLINE* ~ token ~ token_separator ~ footer_content }
 breaking_change_token = { "BREAKING CHANGE" | "BREAKING-CHANGE" }
-token = ${ breaking_change_token | ( !token_separator ~ ( ASCII_ALPHANUMERIC | "-"))* }
-token_separator = ${ ": " | " #" }
-footer_content = ${ ((!token_separator ~ !NEWLINE) ~ ANY)+ }
+token = { breaking_change_token | ( !token_separator ~ ( ASCII_ALPHANUMERIC | "-"))* }
+token_separator = { ": " | " #" }
+footer_content = { (!footer ~ ANY)+ }
 
 type_separator = { ":" }
 whitespace_terminal = { " " }

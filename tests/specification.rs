@@ -296,3 +296,39 @@ fn footer_with_no_body() {
 
     assert_breaking_change(&parsed);
 }
+
+// A footer’s value MAY contain spaces and newlines, and parsing MUST terminate when the next valid
+// footer token/separator pair is observed.
+#[test]
+fn footer_with_new_line() {
+    // Arrange
+    let commit_message = indoc!(
+        "chore: a commit
+
+    BREAKING CHANGE: a long message that describe a footer
+    with multiple new line
+    another-footer: with content"
+    );
+
+    let parsed = parse(commit_message);
+
+    assert_no_body(&parsed);
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "BREAKING CHANGE".to_string(),
+            content: indoc!("a long message that describe a footer
+    with multiple new line").to_string(),
+        },
+    );
+
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "another-footer".to_string(),
+            content: "with content".to_string(),
+        },
+    );
+
+    assert_breaking_change(&parsed);
+}
