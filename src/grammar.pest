@@ -11,11 +11,11 @@ scope_content = ${ ( !parent_right ~ !parent_left ~ !NEWLINE ~ ANY)+ }
 
 
 // [optional body]
-body = { (continuation ~ !footer ~ body_content) }
-body_content = { (!line_separator ~ ANY)+ }
+body = { (blank_line ~ !footer ~ body_content) }
+body_content = { (!blank_line ~ ANY)+ }
 
 // [optional footer(s)]
-footers = { continuation ~ footer* }
+footers = { blank_line ~ footer* }
 footer = ${ NEWLINE* ~ token ~ token_separator ~ footer_content }
 breaking_change_token = { "BREAKING CHANGE" | "BREAKING-CHANGE" }
 token = { breaking_change_token | ( !token_separator ~ ( ASCII_ALPHANUMERIC | "-"))* }
@@ -27,6 +27,4 @@ whitespace_terminal = { " " }
 parent_left = _{ "(" }
 parent_right = _{ ")" }
 WHITESPACE = _{ " " }
-blank_line = _{ NEWLINE ~ WHITESPACE*}
-line_separator = _{ NEWLINE ~ WHITESPACE* ~ NEWLINE}
-continuation = _{ blank_line ~ NEWLINE }
+blank_line = _{ NEWLINE ~ WHITESPACE* ~ NEWLINE }

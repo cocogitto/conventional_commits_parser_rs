@@ -1,6 +1,7 @@
 // These parts of the specification depends on the end user and are no testable on our side
 // 2. The type feat MUST be used when a commit adds a new feature to your application or library.
 // 3. The type fix MUST be used when a commit represents a bug fix for your application.
+// 11. Breaking changes MUST be indicated in the type/scope prefix of a commit, or as an entry in the footer.
 
 use conventional_commit_parser::commit::{CommitType, Footer};
 use conventional_commit_parser::parse;
@@ -331,4 +332,20 @@ fn footer_with_new_line() {
     );
 
     assert_breaking_change(&parsed);
+}
+
+// 12. If included as a footer, a breaking change MUST consist of the uppercase text BREAKING CHANGE,
+// followed by a colon, space, and description, e.g., BREAKING CHANGE: environment variables now take precedence over config files.
+#[test]
+#[should_panic(expected = "Malformed footer token")]
+fn lower_case_breaking_change_footer_fails() {
+    // Arrange
+    let commit_message = indoc!(
+        "chore: a commit
+
+    the body
+
+    breaking change: oops");
+
+    parse(commit_message).unwrap();
 }
