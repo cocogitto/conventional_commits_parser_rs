@@ -1,5 +1,5 @@
 use anyhow::Result;
-use conventional_commit_parser::commit::{ConventionalCommit, CommitType, Footer};
+use conventional_commit_parser::commit::{CommitType, ConventionalCommit, Footer};
 use spectral::prelude::*;
 
 pub fn assert_summary(res: &Result<ConventionalCommit>, expected: &str) {

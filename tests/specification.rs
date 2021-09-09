@@ -332,8 +332,11 @@ fn footer_with_new_line() {
         &parsed,
         Footer {
             token: "BREAKING CHANGE".to_string(),
-            content: indoc!("a long message that describe a footer
-    with multiple new line").to_string(),
+            content: indoc!(
+                "a long message that describe a footer
+    with multiple new line"
+            )
+            .to_string(),
         },
     );
 
@@ -359,7 +362,8 @@ fn lower_case_breaking_change_footer_fails() {
 
     the body
 
-    breaking change: oops");
+    breaking change: oops"
+    );
 
     parse(commit_message).unwrap();
 }

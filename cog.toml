@@ -1,0 +1,21 @@
+github = "https://github.com/oknozor/conventional_commits_parser_rs"
+
+authors = [
+    { signature = "Paul Delafosse", username = "oknozor" },
+]
+changelog_path = "CHANGELOG.md"
+
+pre_bump_hooks = [
+    "cargo test",
+    "cargo clippy",
+    "cargo build --release",
+    "cargo fmt --all",
+    "cargo bump {{version}}",
+]
+
+post_bump_hooks = [
+    "git push",
+    "git push origin {{version}}",
+    "cargo package",
+    "cargo publish"
+]

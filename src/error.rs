@@ -81,7 +81,7 @@ impl From<PestError<Rule>> for ParseError {
             }
             pest::error::ErrorVariant::CustomError { .. } => ParseError::Other(ParseErrorHelper {
                 message: "Custom error".to_string(),
-                error: pest_error.clone(),
+                error: pest_error,
             }),
         }
     }
