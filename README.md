@@ -1,8 +1,10 @@
 # Conventional commit parser
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/oknozor/conventional_commits_parser_rs)
+[![Latest Version]][crates.io]
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 ![License](https://img.shields.io/github/license/oknozor/conventional_commits_parser_rs)
 
+[Latest Version]: https://img.shields.io/crates/v/conventional_commit_parser.svg
+[crates.io]: https://www.crates.io/crates/conventional_commit_parser
 
 A rust implementation of the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/).
 ---

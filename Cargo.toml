@@ -6,6 +6,7 @@ authors = ["Paul Delafosse <paul.delafosse@protonmail.com>"]
 readme = "README.md"
 license-file = "LICENSE"
 repository = "https://github.com/oknozor/conventional_commits_parser_rs"
+documentation = "https://docs.rs/conventional_commit_parser"
 description="""
 A rust implementation of the conventional commit specification.
 """
