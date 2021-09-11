@@ -1,6 +1,8 @@
 use crate::commit::CommitType::*;
 use crate::Rule;
 use pest::iterators::Pair;
+use std::fmt;
+use std::fmt::Formatter;
 
 /// A commit type consist of a noun describing the kind of modification made.
 /// In addition to the mandatory `fix` and `feat` type, common commit types taken from
@@ -155,5 +157,113 @@ impl From<&str> for CommitType {
 impl Default for CommitType {
     fn default() -> Self {
         CommitType::Chore
+    }
+}
+
+impl AsRef<str> for CommitType {
+    fn as_ref(&self) -> &str {
+        match self {
+            Feature => "feat",
+            BugFix => "fix",
+            Chore => "chore",
+            Revert => "revert",
+            Performances => "perf",
+            Documentation => "docs",
+            Style => "style",
+            Refactor => "refactor",
+            Test => "test",
+            Build => "build",
+            Ci => "ci",
+            Custom(key) => key,
+        }
+    }
+}
+
+impl ToString for ConventionalCommit {
+    fn to_string(&self) -> String {
+        let mut message = String::new();
+        message.push_str(self.commit_type.as_ref());
+
+        if let Some(scope) = &self.scope {
+            message.push_str(&format!("({})", scope));
+        }
+
+        if self.is_breaking_change {
+            message.push('!');
+        }
+
+        message.push_str(&format!(": {}", &self.summary));
+
+        if let Some(body) = &self.body {
+            message.push_str(&format!("\n\n{}", body));
+        }
+
+        message.push('\n');
+
+        self.footers.iter().for_each(|footer| {
+            message.push_str(&format!("\n{}: {}", footer.token, footer.content))
+        });
+
+        message
+    }
+}
+
+impl fmt::Display for CommitType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_ref())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::commit::{CommitType, ConventionalCommit, Footer};
+    use crate::parse;
+    use indoc::indoc;
+    use spectral::assert_that;
+    use spectral::prelude::ResultAssertions;
+
+    #[test]
+    fn commit_to_string_ok() {
+        let commit = ConventionalCommit {
+            commit_type: CommitType::BugFix,
+            scope: Some("code".to_string()),
+            summary: "correct minor typos in code".to_string(),
+            body: Some(
+                indoc!(
+                    "see the issue for details
+
+        on typos fixed."
+                )
+                .to_string(),
+            ),
+            footers: vec![
+                Footer {
+                    token: "Reviewed-by".to_string(),
+                    content: "Z".to_string(),
+                },
+                Footer {
+                    token: "Refs".to_string(),
+                    content: "133".to_string(),
+                },
+            ],
+            is_breaking_change: false,
+        };
+
+        let expected = indoc!(
+            "fix(code): correct minor typos in code
+
+        see the issue for details
+
+        on typos fixed.
+
+        Reviewed-by: Z
+        Refs: 133"
+        )
+        .to_string();
+
+        assert_that(&commit.to_string()).is_equal_to(expected);
+        let parsed = parse(&commit.to_string());
+
+        assert_that(&parsed).is_ok().is_equal_to(commit);
     }
 }
