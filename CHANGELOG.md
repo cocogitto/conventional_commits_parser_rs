@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.2.0 - 2021-09-11
+
+
+### Documentation
+
+[0c2259](https://github.com/oknozor/conventional_commits_parser_rs/commit/0c2259ad875f2f3fd0599d9d87f3aeedcd5dcb7b) - add docs and crate badge - [oknozor](https://github.com/oknozor)
+
+
+### Features
+
+[0a21e6](https://github.com/oknozor/conventional_commits_parser_rs/commit/0a21e6afc1ba63dd112c7078d3282c0aa14b5017) - add convenient str/string convertion function - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.1.0 - 2021-09-09
 
 
