@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.4.0 - 2021-09-12
+
+
+### Features
+
+[a70d28](https://github.com/oknozor/conventional_commits_parser_rs/commit/a70d28d76ab34cd074254b09b0d131c1a181d0c6) - better error reporting and dedicated parse functions - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.3.0 - 2021-09-12
 
 
