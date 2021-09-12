@@ -228,7 +228,9 @@ impl ToString for ConventionalCommit {
             message.push_str(&format!("({})", scope));
         }
 
-        if self.is_breaking_change {
+        let has_breaking_change_footer = self.footers.iter().any(|f| f.is_breaking_change());
+
+        if self.is_breaking_change && !has_breaking_change_footer {
             message.push('!');
         }
 
@@ -238,7 +240,9 @@ impl ToString for ConventionalCommit {
             message.push_str(&format!("\n\n{}", body));
         }
 
-        message.push('\n');
+        if !self.footers.is_empty() {
+            message.push('\n');
+        }
 
         self.footers.iter().for_each(|footer| {
             message.push_str(&format!("\n{}: {}", footer.token, footer.content))
@@ -264,6 +268,74 @@ mod test {
 
     #[test]
     fn commit_to_string_ok() {
+        let commit = ConventionalCommit {
+            commit_type: CommitType::Feature,
+            scope: None,
+            summary: "a feature".to_string(),
+            body: None,
+            footers: Vec::with_capacity(0),
+            is_breaking_change: false,
+        };
+
+        let expected = "feat: a feature".to_string();
+
+        assert_that(&commit.to_string()).is_equal_to(expected);
+        let parsed = parse(&commit.to_string());
+        assert_that(&parsed).is_ok().is_equal_to(commit);
+    }
+
+    #[test]
+    fn commit_to_with_footer_only_string_ok() {
+        let commit = ConventionalCommit {
+            commit_type: CommitType::Chore,
+            scope: None,
+            summary: "a commit".to_string(),
+            body: None,
+            footers: vec![Footer {
+                token: "BREAKING CHANGE".to_string(),
+                content: "message".to_string(),
+            }],
+            is_breaking_change: true,
+        };
+
+        let expected = indoc!(
+            "chore: a commit
+
+        BREAKING CHANGE: message"
+        )
+        .to_string();
+
+        assert_that(&commit.to_string()).is_equal_to(expected);
+        let parsed = parse(&commit.to_string());
+        assert_that(&parsed).is_ok().is_equal_to(commit);
+    }
+
+    #[test]
+    fn commit_with_body_only_and_breaking_change() {
+        let commit = ConventionalCommit {
+            commit_type: CommitType::Chore,
+            scope: None,
+            summary: "a commit".to_string(),
+            body: Some("A breaking change body on\nmultiple lines".to_string()),
+            footers: Vec::with_capacity(0),
+            is_breaking_change: true,
+        };
+
+        let expected = indoc!(
+            "chore!: a commit
+
+            A breaking change body on
+            multiple lines"
+        )
+        .to_string();
+
+        assert_that(&commit.to_string()).is_equal_to(expected);
+        let parsed = parse(&commit.to_string());
+        assert_that(&parsed).is_ok().is_equal_to(commit);
+    }
+
+    #[test]
+    fn full_commit_to_string() {
         let commit = ConventionalCommit {
             commit_type: CommitType::BugFix,
             scope: Some("code".to_string()),
