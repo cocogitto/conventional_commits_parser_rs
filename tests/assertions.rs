@@ -1,6 +1,9 @@
+#![allow(unused)]
+
 use conventional_commit_parser::commit::{CommitType, ConventionalCommit, Footer};
-use conventional_commit_parser::error::ParseError;
+use conventional_commit_parser::error::{ParseError, ParseErrorKind};
 use spectral::prelude::*;
+use std::fmt::Debug;
 
 pub fn assert_summary(res: &Result<ConventionalCommit, ParseError>, expected: &str) {
     assert_that(res)
@@ -72,4 +75,11 @@ pub fn assert_contains_footer(res: &Result<ConventionalCommit, ParseError>, expe
         .is_ok()
         .map(|message| &message.footers)
         .contains(expected)
+}
+
+pub fn assert_error<T: Debug>(res: &Result<T, ParseError>, expected: ParseErrorKind) {
+    assert_that(res)
+        .is_err()
+        .map(|err| &err.kind)
+        .is_equal_to(expected)
 }

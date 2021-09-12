@@ -14,6 +14,7 @@ use indoc::indoc;
 mod assertions;
 
 use crate::assertions::*;
+use conventional_commit_parser::error::ParseErrorKind;
 
 // 1. Commits MUST be prefixed with a type, which consists of a noun, feat, fix, etc., followed by
 // the OPTIONAL scope, OPTIONAL !, and REQUIRED terminal colon and space.
@@ -38,23 +39,27 @@ fn commits_with_feature_type() {
 }
 
 #[test]
-#[should_panic(expected = "Missing `:` after commit type")]
 fn parsing_a_commit_type_without_colon_separator_should_fail() {
     // Arrange
     let commit_message = "feat toto va à la plage";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MissingSeparator);
 }
 
 #[test]
-#[should_panic(expected = "Missing `:` after commit type")]
 fn parsing_a_commit_type_with_whitespace_should_fail() {
     // Arrange
     let commit_message = "feat toto: va à la plage";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MissingSeparator);
 }
 
 #[test]
@@ -94,33 +99,39 @@ fn commits_with_feature_type_and_scope_and_breaking_change_mark() {
 }
 
 #[test]
-#[should_panic(expected = "Missing whitespace terminal after commit type separator `:`")]
 fn parsing_a_commit_type_without_terminal_column_and_space_should_fail() {
     // Arrange
     let commit_message = "feat:toto va à la plage";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MissingWhiteSpace);
 }
 
 #[test]
-#[should_panic(expected = "Missing whitespace terminal after commit type separator `:`")]
 fn parsing_a_scoped_commit_type_without_terminal_column_and_space_should_fail() {
     // Arrange
     let commit_message = "feat(toto):toto va à la plage";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MissingWhiteSpace);
 }
 
 #[test]
-#[should_panic(expected = "Missing whitespace terminal after commit type separator `:`")]
 fn parsing_a_scoped_breaking_change_commit_type_without_terminal_column_and_space_should_fail() {
     // Arrange
     let commit_message = "feat(toto)!:toto va à la plage";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MissingWhiteSpace);
 }
 
 // 3. A scope MAY be provided after a type. A scope MUST consist of a noun describing a section of
@@ -138,23 +149,27 @@ fn commits_with_scope() {
 }
 
 #[test]
-#[should_panic(expected = "Malformed scope")]
 fn scope_with_inner_parenthesis_should_fail() {
     // Arrange
-    let commit_message = "fix(()): the parser";
+    let commit_message = "fix((toto): the parser";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::UnexpectedParenthesis);
 }
 
 #[test]
-#[should_panic(expected = "Malformed scope")]
 fn scope_with_inner_new_line_should_fail() {
     // Arrange
     let commit_message = "fix(\n)): the parser";
 
     // Act
-    parse(commit_message).unwrap();
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(&result, ParseErrorKind::MalformedScope);
 }
 
 // 6. A longer commit body MAY be provided after the short description, providing additional contextual
@@ -251,7 +266,6 @@ fn commits_with_footers() {
 // BREAKING CHANGE, which MAY also be used as a token.
 
 #[test]
-#[should_panic(expected = "Malformed footer token")]
 fn footer_with_whitespace_token_fail() {
     // Arrange
     let commit_message = indoc!(
@@ -262,7 +276,14 @@ fn footer_with_whitespace_token_fail() {
     invalid token : this is a token"
     );
 
-    parse(commit_message).unwrap();
+    // Act
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(
+        &result,
+        ParseErrorKind::MalformedOrUnexpectedFooterSeparator,
+    );
 }
 
 #[test]
@@ -354,7 +375,6 @@ fn footer_with_new_line() {
 // 12. If included as a footer, a breaking change MUST consist of the uppercase text BREAKING CHANGE,
 // followed by a colon, space, and description, e.g., BREAKING CHANGE: environment variables now take precedence over config files.
 #[test]
-#[should_panic(expected = "Malformed footer token")]
 fn lower_case_breaking_change_footer_fails() {
     // Arrange
     let commit_message = indoc!(
@@ -365,7 +385,14 @@ fn lower_case_breaking_change_footer_fails() {
     breaking change: oops"
     );
 
-    parse(commit_message).unwrap();
+    // Act
+    let result = parse(commit_message);
+
+    // Assert
+    assert_error(
+        &result,
+        ParseErrorKind::MalformedOrUnexpectedFooterSeparator,
+    );
 }
 
 // 15. The units of information that make up Conventional Commits MUST NOT be treated as case sensitive

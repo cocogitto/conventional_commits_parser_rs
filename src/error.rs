@@ -3,86 +3,79 @@ use pest::error::Error as PestError;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 
-/// Common conventional commit formatting errors are wrapped in this struct to produce an additional hint
 #[derive(Debug)]
-pub enum ParseError {
-    MissingSeparator(ParseErrorHelper),
-    MissingWhiteSpaceAfterSeparator(ParseErrorHelper),
-    MalformedScope(ParseErrorHelper),
-    MalformedTokenFooter(ParseErrorHelper),
-    Other(ParseErrorHelper),
+pub struct ParseError {
+    pub inner: PestError<Rule>,
+    pub kind: ParseErrorKind,
 }
 
-#[derive(Debug)]
-#[doc(hidden)]
-pub struct ParseErrorHelper {
-    pub message: String,
-    pub error: PestError<Rule>,
+/// Common conventional commit formatting errors are wrapped in this struct to produce an additional hint
+#[derive(Debug, PartialEq)]
+pub enum ParseErrorKind {
+    MissingSeparator,
+    MissingWhiteSpace,
+    UnexpectedParenthesis,
+    MalformedScope,
+    MalformedOrUnexpectedFooterSeparator,
+    Other,
+}
+
+impl AsRef<str> for ParseErrorKind {
+    fn as_ref(&self) -> &str {
+        match &self {
+            ParseErrorKind::MissingSeparator => "Missing commit type separator `:`",
+            ParseErrorKind::MissingWhiteSpace => {
+                "Missing whitespace terminal after commit type separator `:`"
+            }
+            ParseErrorKind::UnexpectedParenthesis => {
+                "A scope value cannot contains inner parenthesis"
+            }
+            ParseErrorKind::MalformedScope => "Malformed commit scope",
+            ParseErrorKind::MalformedOrUnexpectedFooterSeparator => {
+                "Either token separator (` #` or `: `) \
+            \nis missing from the footer or a footer was not expected at this point"
+            }
+            ParseErrorKind::Other => "Parse error",
+        }
+    }
 }
 
 impl std::error::Error for ParseError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            ParseError::MissingSeparator(pest_error)
-            | ParseError::MissingWhiteSpaceAfterSeparator(pest_error)
-            | ParseError::MalformedScope(pest_error)
-            | ParseError::MalformedTokenFooter(pest_error)
-            | ParseError::Other(pest_error) => Some(&pest_error.error),
-        }
+        Some(&self.inner)
     }
 }
+
 impl Display for ParseError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let pest_err = match self {
-            ParseError::MissingSeparator(e)
-            | ParseError::MissingWhiteSpaceAfterSeparator(e)
-            | ParseError::MalformedTokenFooter(e)
-            | ParseError::Other(e)
-            | ParseError::MalformedScope(e) => e,
-        };
-
-        write!(f, "{}", pest_err.message)
+        write!(f, "{}", self.kind.as_ref())
     }
 }
 
 impl From<PestError<Rule>> for ParseError {
     fn from(pest_error: PestError<Rule>) -> Self {
-        match pest_error.variant {
+        let kind = match pest_error.variant {
             pest::error::ErrorVariant::ParsingError { ref positives, .. } => {
                 if positives.contains(&Rule::type_separator) {
-                    ParseError::MissingSeparator(ParseErrorHelper {
-                        message: "Missing `:` after commit type".to_string(),
-                        error: pest_error.clone(),
-                    })
+                    ParseErrorKind::MissingSeparator
+                } else if positives.contains(&Rule::unexpected_parenthesis) {
+                    ParseErrorKind::UnexpectedParenthesis
                 } else if positives.contains(&Rule::whitespace_terminal) {
-                    ParseError::MissingWhiteSpaceAfterSeparator(ParseErrorHelper {
-                        message: "Missing whitespace terminal after commit type separator `:`"
-                            .to_string(),
-                        error: pest_error.clone(),
-                    })
+                    ParseErrorKind::MissingWhiteSpace
                 } else if positives.contains(&Rule::scope_content) {
-                    ParseError::MissingWhiteSpaceAfterSeparator(ParseErrorHelper {
-                        message: "Malformed scope".to_string(),
-                        error: pest_error.clone(),
-                    })
-                } else if positives.contains(&Rule::breaking_change_token)
-                    || positives.contains(&Rule::token_separator)
-                {
-                    ParseError::MissingWhiteSpaceAfterSeparator(ParseErrorHelper {
-                        message: "Malformed footer token".to_string(),
-                        error: pest_error.clone(),
-                    })
+                    ParseErrorKind::MalformedScope
+                } else if positives.contains(&Rule::token_separator) {
+                    ParseErrorKind::MalformedOrUnexpectedFooterSeparator
                 } else {
-                    ParseError::Other(ParseErrorHelper {
-                        message: "Unexpected parsing error".to_string(),
-                        error: pest_error.clone(),
-                    })
+                    ParseErrorKind::Other
                 }
             }
-            pest::error::ErrorVariant::CustomError { .. } => ParseError::Other(ParseErrorHelper {
-                message: "Custom error".to_string(),
-                error: pest_error,
-            }),
+            pest::error::ErrorVariant::CustomError { .. } => ParseErrorKind::Other,
+        };
+
+        ParseError {
+            inner: pest_error,
+            kind,
         }
     }
 }

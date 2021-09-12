@@ -46,6 +46,29 @@ pub struct Footer {
     pub content: String,
 }
 
+impl Footer {
+    /// Return true if a footer as the breaking change token
+    /// ```rust
+    /// # fn main() {
+    /// use conventional_commit_parser::commit::Footer;
+    /// use std::ops::Not;
+    /// let footer = Footer {
+    ///     token: "BREAKING CHANGE".to_string(),content: "some changes were made".to_string(),
+    /// };
+    ///
+    /// assert!(footer.is_breaking_change());
+    ///
+    /// let footer = Footer {
+    ///     token: "a-token".to_string(),content: "Ref 133".to_string(),
+    /// };
+    ///
+    /// assert!(footer.is_breaking_change().not());
+    /// # }
+    pub fn is_breaking_change(&self) -> bool {
+        self.token == "BREAKING CHANGE" || self.token == "BREAKING-CHANGE"
+    }
+}
+
 /// A conventional commit compliant commit message produced by the [parse] function
 ///
 /// [parse]: crate::ConventionalCommitParser::parse
@@ -65,6 +88,17 @@ pub struct ConventionalCommit {
     pub is_breaking_change: bool,
 }
 
+impl From<Pair<'_, Rule>> for Footer {
+    fn from(pairs: Pair<'_, Rule>) -> Self {
+        let mut pair = pairs.into_inner();
+        let token = pair.next().unwrap().as_str().to_string();
+        let _separator = pair.next().unwrap();
+        let content = pair.next().unwrap().as_str().to_string();
+
+        Footer { token, content }
+    }
+}
+
 impl Default for ConventionalCommit {
     fn default() -> Self {
         ConventionalCommit {
@@ -79,18 +113,30 @@ impl Default for ConventionalCommit {
 }
 
 impl ConventionalCommit {
-    pub(crate) fn set_breaking_change(&mut self, pair: Pair<Rule>) {
+    pub(crate) fn set_summary(&mut self, pair: Pair<Rule>) {
+        for pair in pair.into_inner() {
+            match pair.as_rule() {
+                Rule::commit_type => self.set_commit_type(&pair),
+                Rule::scope => self.set_scope(pair),
+                Rule::summary_content => self.set_summary_content(pair),
+                Rule::breaking_change_mark => self.set_breaking_change(pair),
+                _other => (),
+            }
+        }
+    }
+
+    fn set_breaking_change(&mut self, pair: Pair<Rule>) {
         if !pair.as_str().is_empty() {
             self.is_breaking_change = true
         }
     }
 
-    pub(crate) fn set_summary_content(&mut self, pair: Pair<Rule>) {
+    fn set_summary_content(&mut self, pair: Pair<Rule>) {
         let summary = pair.as_str();
         self.summary = summary.to_string();
     }
 
-    pub(crate) fn set_scope(&mut self, pair: Pair<Rule>) {
+    fn set_scope(&mut self, pair: Pair<Rule>) {
         if let Some(scope) = pair.into_inner().next() {
             let scope = scope.as_str();
             if !scope.is_empty() {
@@ -99,19 +145,17 @@ impl ConventionalCommit {
         };
     }
 
-    pub(crate) fn set_commit_type(&mut self, pair: &Pair<Rule>) {
+    pub fn set_commit_type(&mut self, pair: &Pair<Rule>) {
         let commit_type = pair.as_str();
         let commit_type = CommitType::from(commit_type);
         self.commit_type = commit_type;
     }
 
     pub(crate) fn set_commit_body(&mut self, pair: Pair<Rule>) {
-        if let Some(body) = pair.into_inner().next() {
-            let body = body.as_str();
-            if !body.is_empty() {
-                self.body = Some(body.to_string())
-            }
-        };
+        let body = pair.as_str();
+        if !body.is_empty() {
+            self.body = Some(body.to_string())
+        }
     }
 
     pub(crate) fn set_footers(&mut self, pair: Pair<Rule>) {
@@ -121,17 +165,13 @@ impl ConventionalCommit {
     }
 
     fn set_footer(&mut self, footer: Pair<Rule>) {
-        let mut footer_pairs = footer.into_inner();
-        let token = footer_pairs.next().unwrap().as_str().to_string();
+        let footer = Footer::from(footer);
 
-        if token == "BREAKING CHANGE" || token == "BREAKING-CHANGE" {
+        if footer.is_breaking_change() {
             self.is_breaking_change = true;
         }
 
-        let _separator = footer_pairs.next().unwrap();
-        let content = footer_pairs.next().unwrap().as_str().to_string();
-
-        self.footers.push(Footer { token, content });
+        self.footers.push(footer);
     }
 }
 
