@@ -5,10 +5,12 @@
 //!
 //! [parse]: crate::ConventionalCommitParser::parse
 //! ```
-//! # fn main() -> anyhow::Result<()> {
+//! # use conventional_commit_parser::error::ParseError;
+//! # fn main() -> Result<(), ParseError> {
 //!
 //! use conventional_commit_parser::parse;
 //! use conventional_commit_parser::commit::*;
+//! use conventional_commit_parser::error::ParseError;
 //! let message = r#"fix: correct minor typos in code
 //!
 //! see the issue for details
@@ -42,7 +44,6 @@ extern crate pest_derive;
 #[macro_use]
 extern crate spectral;
 
-use anyhow::Result;
 use pest::Parser;
 
 use crate::commit::ConventionalCommit;
@@ -53,7 +54,6 @@ use crate::error::ParseError;
 /// [parse]: crate::ConventionalCommitParser::parse
 pub mod commit;
 
-/// Parse errors, note that parse results are wrapped in [anyhow::Result](https://docs.rs/anyhow/1.0.43/anyhow/type.Result.html)
 pub mod error;
 
 #[doc(hidden)]
@@ -62,7 +62,7 @@ pub mod error;
 struct ConventionalCommitParser;
 
 /// Parse a commit message into a [`commit::ConventionalCommit`]
-pub fn parse(commit_message: &str) -> Result<ConventionalCommit> {
+pub fn parse(commit_message: &str) -> Result<ConventionalCommit, ParseError> {
     let pairs = ConventionalCommitParser::parse(Rule::message, commit_message)
         .map_err(ParseError::from)?
         .next()
