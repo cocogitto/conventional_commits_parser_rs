@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.4.2 - 2021-09-12
+
+
+### Bug Fixes
+
+[702698](https://github.com/oknozor/conventional_commits_parser_rs/commit/702698fdc0e86216a19d2d59c466181614b04fbc) - change rule name to 'no_parenthesis' for error formating - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.4.1 - 2021-09-12
 
 
