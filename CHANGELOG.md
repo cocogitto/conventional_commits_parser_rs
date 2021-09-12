@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.4.1 - 2021-09-12
+
+
+### Bug Fixes
+
+[ce4eac](https://github.com/oknozor/conventional_commits_parser_rs/commit/ce4eac57bbf3ccc09f2a26798227859d123418ce) - fix to_string with breaking changes footer - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.4.0 - 2021-09-12
 
 
