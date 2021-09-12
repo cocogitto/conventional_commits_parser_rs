@@ -7,7 +7,7 @@ summary = ${ commit_type ~ scope? ~ breaking_change_mark? ~ type_separator ~ whi
 commit_type = { ASCII_ALPHA+ }
 scope = {  (parent_left ~ scope_content ~ parent_right) }
 breaking_change_mark = { "!"? }
-scope_content = ${ ( unexpected_parenthesis ~ !NEWLINE ~ ANY)+ }
+scope_content = ${ ( no_parenthesis ~ !NEWLINE ~ ANY)+ }
 
 
 // [optional body]
@@ -28,4 +28,4 @@ parent_right = _{ ")" }
 WHITESPACE = _{ " " }
 blank_line = _{ NEWLINE ~ WHITESPACE* ~ NEWLINE }
 
-unexpected_parenthesis = { !(parent_right | parent_left)  }
+no_parenthesis = { !(parent_right | parent_left)  }

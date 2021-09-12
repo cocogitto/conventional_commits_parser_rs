@@ -58,7 +58,7 @@ impl From<PestError<Rule>> for ParseError {
             pest::error::ErrorVariant::ParsingError { ref positives, .. } => {
                 if positives.contains(&Rule::type_separator) {
                     ParseErrorKind::MissingSeparator
-                } else if positives.contains(&Rule::unexpected_parenthesis) {
+                } else if positives.contains(&Rule::no_parenthesis) {
                     ParseErrorKind::UnexpectedParenthesis
                 } else if positives.contains(&Rule::whitespace_terminal) {
                     ParseErrorKind::MissingWhiteSpace
