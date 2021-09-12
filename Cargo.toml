@@ -1,6 +1,6 @@
 [package]
 name = "conventional_commit_parser"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2018"
 authors = ["Paul Delafosse <paul.delafosse@protonmail.com>"]
 readme = "README.md"

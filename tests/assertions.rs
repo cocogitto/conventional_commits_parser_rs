@@ -1,6 +1,6 @@
 use conventional_commit_parser::commit::{CommitType, ConventionalCommit, Footer};
-use spectral::prelude::*;
 use conventional_commit_parser::error::ParseError;
+use spectral::prelude::*;
 
 pub fn assert_summary(res: &Result<ConventionalCommit, ParseError>, expected: &str) {
     assert_that(res)

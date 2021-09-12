@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.3.0 - 2021-09-12
+
+
+### Features
+
+[77b851](https://github.com/oknozor/conventional_commits_parser_rs/commit/77b851da8a9f7015cece7ca0cabb1ebb6b20ebc7) - get rid of anyhow - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.2.0 - 2021-09-11
 
 
