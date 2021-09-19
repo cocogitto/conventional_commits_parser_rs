@@ -54,10 +54,11 @@ use crate::error::ParseError;
 pub mod commit;
 
 pub mod error;
+mod conventional_changelog;
 
 #[doc(hidden)]
 #[derive(Parser)]
-#[grammar = "grammar.pest"]
+#[grammar = "conventional_commits_grammar.pest"]
 struct ConventionalCommitParser;
 
 /// Parse a commit message into a [`commit::ConventionalCommit`]

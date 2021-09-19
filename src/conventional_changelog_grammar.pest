@@ -1,0 +1,14 @@
+delimiter_start = _{ "{{" }
+delimiter_end = _{ "}}" }
+host = { delimiter_start ~ "host" ~ delimiter_end }
+owner = { delimiter_start ~ "owner" ~ delimiter_end}
+repository = { delimiter_start ~ "repository" ~ delimiter_end }
+hash = { delimiter_start~ "hash" ~ delimiter_end }
+previous_tag = { delimiter_start~ "previous_tag" ~ delimiter_end }
+current_tag = { delimiter_start~ "current_tag" ~ delimiter_end }
+issue_id = { delimiter_start~ "id" ~ delimiter_end }
+user = { delimiter_start~ "user" ~ delimiter_end }
+other = { (!substitution ~ !slash ~ ANY)*  }
+substitution = { owner | repository | hash | previous_tag | current_tag | issue_id | user }
+slash = { "/" }
+url = {  host ~ ( slash ~ ( substitution | other))+ }
