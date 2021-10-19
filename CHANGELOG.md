@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.2 - 2021-10-19
+
+
+### Features
+
+[6d9429](https://github.com/oknozor/conventional_commits_parser_rs/commit/6d94294418163cd0677b12568bc77841cf481679) - derive Ord for commit types - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.4.2 - 2021-09-12
 
 
