@@ -1,14 +1,16 @@
-use crate::commit::CommitType::*;
-use crate::Rule;
-use pest::iterators::Pair;
 use std::fmt;
 use std::fmt::Formatter;
+
+use pest::iterators::Pair;
+
+use crate::commit::CommitType::*;
+use crate::Rule;
 
 /// A commit type consist of a noun describing the kind of modification made.
 /// In addition to the mandatory `fix` and `feat` type, common commit types taken from
 /// [the angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
 /// as their own enum variant. Other type will be parser as [`CommitType::Custom`]
-#[derive(Hash, Eq, PartialEq, Debug, Clone)]
+#[derive(Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Clone)]
 pub enum CommitType {
     /// *feat*: a commit of the type `feat` introduces a new feature to the codebase (this correlates with `MINOR` in Semantic Versioning).
     Feature,
@@ -260,11 +262,12 @@ impl fmt::Display for CommitType {
 
 #[cfg(test)]
 mod test {
-    use crate::commit::{CommitType, ConventionalCommit, Footer};
-    use crate::parse;
     use indoc::indoc;
     use spectral::assert_that;
     use spectral::prelude::ResultAssertions;
+
+    use crate::commit::{CommitType, ConventionalCommit, Footer};
+    use crate::parse;
 
     #[test]
     fn commit_to_string_ok() {
