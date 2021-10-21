@@ -356,8 +356,7 @@ fn footer_with_new_line() {
             content: indoc!(
                 "a long message that describe a footer
     with multiple new line"
-            )
-            ,
+            ),
         },
     );
 

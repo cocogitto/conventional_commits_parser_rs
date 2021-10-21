@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.0 - 2021-10-21
+
+
+### Features
+
+[db4d6d](https://github.com/oknozor/conventional_commits_parser_rs/commit/db4d6dc5cfc5c2b4d26d4b36385674ab003c127d) - remove all String allocation - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.5.2 - 2021-10-19
 
 

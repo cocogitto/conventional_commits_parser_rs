@@ -90,7 +90,7 @@ pub struct ConventionalCommit<'a> {
     pub is_breaking_change: bool,
 }
 
-impl <'a> From<Pair<'a, Rule>> for Footer<'a> {
+impl<'a> From<Pair<'a, Rule>> for Footer<'a> {
     fn from(pairs: Pair<'a, Rule>) -> Self {
         let mut pair = pairs.into_inner();
         let token = pair.next().unwrap().as_str();
@@ -114,7 +114,7 @@ impl Default for ConventionalCommit<'_> {
     }
 }
 
-impl <'a> ConventionalCommit<'a> {
+impl<'a> ConventionalCommit<'a> {
     pub(crate) fn set_summary(&mut self, pair: Pair<'a, Rule>) {
         for pair in pair.into_inner() {
             match pair.as_rule() {
@@ -177,7 +177,7 @@ impl <'a> ConventionalCommit<'a> {
     }
 }
 
-impl <'a> From<&'a str> for CommitType<'a> {
+impl<'a> From<&'a str> for CommitType<'a> {
     fn from(commit_type: &'a str) -> Self {
         match commit_type.to_ascii_lowercase().as_str() {
             "feat" => Feature,
@@ -202,7 +202,7 @@ impl Default for CommitType<'_> {
     }
 }
 
-impl <'a> AsRef<str> for CommitType<'a> {
+impl<'a> AsRef<str> for CommitType<'a> {
     fn as_ref(&self) -> &str {
         match self {
             Feature => "feat",
@@ -306,8 +306,7 @@ mod test {
             "chore: a commit
 
         BREAKING CHANGE: message"
-        )
-        ;
+        );
 
         let commit_str = commit.to_string();
 
@@ -347,14 +346,11 @@ mod test {
             commit_type: CommitType::BugFix,
             scope: Some("code"),
             summary: "correct minor typos in code",
-            body: Some(
-                indoc!(
-                    "see the issue for details
+            body: Some(indoc!(
+                "see the issue for details
 
         on typos fixed."
-                )
-                ,
-            ),
+            )),
             footers: vec![
                 Footer {
                     token: "Reviewed-by",
