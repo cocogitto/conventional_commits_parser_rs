@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.7.0 - 2021-10-21
+
+
+### Features
+
+[dad29c](https://github.com/oknozor/conventional_commits_parser_rs/commit/dad29cb45842a55282c394eff2ffa26f1250e8f6) - add breaking change description - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.6.1 - 2021-10-21
 
 
