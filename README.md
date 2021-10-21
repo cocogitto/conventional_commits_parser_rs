@@ -23,17 +23,17 @@ on typos fixed.
 Reviewed-by: Z
 Refs #133"#;
 
-let conventional_commit = parse(message)?;
+let commit = parse(message).unwrap();
 
-assert_eq!(conventional_commit.commit_type, CommitType::BugFix);
-assert_eq!(conventional_commit.summary, "correct minor typos in code".to_string());
-assert_eq!(conventional_commit.body, Some(r#"see the issue for details
+assert_eq!(commit.commit_type, CommitType::BugFix);
+assert_eq!(commit.summary, "correct minor typos in code".to_string());
+assert_eq!(commit.body, Some(r#"see the issue for details
 
-on typos fixed."#.to_string()));
+on typos fixed."#));
 
-assert_eq!(conventional_commit.footers, vec![
-    Footer {token: "Reviewed-by".to_string(), content: "Z".to_string()},
-    Footer {token: "Refs".to_string(), content: "133".to_string(),}
+assert_eq!(commit.footers, vec![
+    Footer {token: "Reviewed-by", content: "Z"},
+    Footer {token: "Refs", content: "133",}
 ]);
 ```
 

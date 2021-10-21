@@ -11,7 +11,7 @@ use crate::Rule;
 /// [the angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
 /// as their own enum variant. Other type will be parser as [`CommitType::Custom`]
 #[derive(Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Clone)]
-pub enum CommitType {
+pub enum CommitType<'a> {
     /// *feat*: a commit of the type `feat` introduces a new feature to the codebase (this correlates with `MINOR` in Semantic Versioning).
     Feature,
     /// *fix*: a commit of the type `fix` patches a bug in your codebase (this correlates with `PATCH` in Semantic Versioning).
@@ -35,33 +35,33 @@ pub enum CommitType {
     /// *ci*: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
     Ci,
     /// A custom commit type, can be anything
-    Custom(String),
+    Custom(&'a str),
 }
 
 /// One or more footers MAY be provided one blank line after the body. Each footer MUST consist of
 /// a word token, followed by either a :<space> or <space># separator, followed by a string value.
 #[derive(Debug, Eq, PartialEq, Default)]
-pub struct Footer {
+pub struct Footer<'a> {
     /// The footer token, either BREAKING CHANGE or a work token
-    pub token: String,
+    pub token: &'a str,
     /// A string value holding the footer message
-    pub content: String,
+    pub content: &'a str,
 }
 
-impl Footer {
+impl<'a> Footer<'a> {
     /// Return true if a footer as the breaking change token
     /// ```rust
     /// # fn main() {
     /// use conventional_commit_parser::commit::Footer;
     /// use std::ops::Not;
     /// let footer = Footer {
-    ///     token: "BREAKING CHANGE".to_string(),content: "some changes were made".to_string(),
+    ///     token: "BREAKING CHANGE",content: "some changes were made",
     /// };
     ///
     /// assert!(footer.is_breaking_change());
     ///
     /// let footer = Footer {
-    ///     token: "a-token".to_string(),content: "Ref 133".to_string(),
+    ///     token: "a-token",content: "Ref 133",
     /// };
     ///
     /// assert!(footer.is_breaking_change().not());
@@ -75,47 +75,47 @@ impl Footer {
 ///
 /// [parse]: crate::ConventionalCommitParser::parse
 #[derive(Debug, Eq, PartialEq)]
-pub struct ConventionalCommit {
+pub struct ConventionalCommit<'a> {
     /// The commit type, `fix`, `feat` etc.
-    pub commit_type: CommitType,
+    pub commit_type: CommitType<'a>,
     /// An optional scope
-    pub scope: Option<String>,
+    pub scope: Option<&'a str>,
     /// Commit description summary
-    pub summary: String,
+    pub summary: &'a str,
     /// An optional commit body
-    pub body: Option<String>,
+    pub body: Option<&'a str>,
     /// A list of commit  footers
-    pub footers: Vec<Footer>,
+    pub footers: Vec<Footer<'a>>,
     /// A commit that has a footer `BREAKING CHANGE` or a `!` after the commit type and scope
     pub is_breaking_change: bool,
 }
 
-impl From<Pair<'_, Rule>> for Footer {
-    fn from(pairs: Pair<'_, Rule>) -> Self {
+impl <'a> From<Pair<'a, Rule>> for Footer<'a> {
+    fn from(pairs: Pair<'a, Rule>) -> Self {
         let mut pair = pairs.into_inner();
-        let token = pair.next().unwrap().as_str().to_string();
+        let token = pair.next().unwrap().as_str();
         let _separator = pair.next().unwrap();
-        let content = pair.next().unwrap().as_str().to_string();
+        let content = pair.next().unwrap().as_str();
 
         Footer { token, content }
     }
 }
 
-impl Default for ConventionalCommit {
+impl Default for ConventionalCommit<'_> {
     fn default() -> Self {
         ConventionalCommit {
             commit_type: Feature,
             scope: None,
             body: None,
             footers: vec![],
-            summary: "".to_string(),
+            summary: "",
             is_breaking_change: false,
         }
     }
 }
 
-impl ConventionalCommit {
-    pub(crate) fn set_summary(&mut self, pair: Pair<Rule>) {
+impl <'a> ConventionalCommit<'a> {
+    pub(crate) fn set_summary(&mut self, pair: Pair<'a, Rule>) {
         for pair in pair.into_inner() {
             match pair.as_rule() {
                 Rule::commit_type => self.set_commit_type(&pair),
@@ -133,40 +133,40 @@ impl ConventionalCommit {
         }
     }
 
-    fn set_summary_content(&mut self, pair: Pair<Rule>) {
+    fn set_summary_content(&mut self, pair: Pair<'a, Rule>) {
         let summary = pair.as_str();
-        self.summary = summary.to_string();
+        self.summary = summary;
     }
 
-    fn set_scope(&mut self, pair: Pair<Rule>) {
+    fn set_scope(&mut self, pair: Pair<'a, Rule>) {
         if let Some(scope) = pair.into_inner().next() {
             let scope = scope.as_str();
             if !scope.is_empty() {
-                self.scope = Some(scope.to_string())
+                self.scope = Some(scope)
             }
         };
     }
 
-    pub fn set_commit_type(&mut self, pair: &Pair<Rule>) {
+    pub fn set_commit_type(&mut self, pair: &Pair<'a, Rule>) {
         let commit_type = pair.as_str();
         let commit_type = CommitType::from(commit_type);
         self.commit_type = commit_type;
     }
 
-    pub(crate) fn set_commit_body(&mut self, pair: Pair<Rule>) {
+    pub(crate) fn set_commit_body(&mut self, pair: Pair<'a, Rule>) {
         let body = pair.as_str();
         if !body.is_empty() {
-            self.body = Some(body.to_string())
+            self.body = Some(body)
         }
     }
 
-    pub(crate) fn set_footers(&mut self, pair: Pair<Rule>) {
+    pub(crate) fn set_footers(&mut self, pair: Pair<'a, Rule>) {
         for footer in pair.into_inner() {
             self.set_footer(footer);
         }
     }
 
-    fn set_footer(&mut self, footer: Pair<Rule>) {
+    fn set_footer(&mut self, footer: Pair<'a, Rule>) {
         let footer = Footer::from(footer);
 
         if footer.is_breaking_change() {
@@ -177,8 +177,8 @@ impl ConventionalCommit {
     }
 }
 
-impl From<&str> for CommitType {
-    fn from(commit_type: &str) -> Self {
+impl <'a> From<&'a str> for CommitType<'a> {
+    fn from(commit_type: &'a str) -> Self {
         match commit_type.to_ascii_lowercase().as_str() {
             "feat" => Feature,
             "fix" => BugFix,
@@ -191,18 +191,18 @@ impl From<&str> for CommitType {
             "test" => Test,
             "build" => Build,
             "ci" => Ci,
-            other => Custom(other.to_string()),
+            _ => Custom(commit_type),
         }
     }
 }
 
-impl Default for CommitType {
+impl Default for CommitType<'_> {
     fn default() -> Self {
         CommitType::Chore
     }
 }
 
-impl AsRef<str> for CommitType {
+impl <'a> AsRef<str> for CommitType<'a> {
     fn as_ref(&self) -> &str {
         match self {
             Feature => "feat",
@@ -221,7 +221,7 @@ impl AsRef<str> for CommitType {
     }
 }
 
-impl ToString for ConventionalCommit {
+impl ToString for ConventionalCommit<'_> {
     fn to_string(&self) -> String {
         let mut message = String::new();
         message.push_str(self.commit_type.as_ref());
@@ -254,7 +254,7 @@ impl ToString for ConventionalCommit {
     }
 }
 
-impl fmt::Display for CommitType {
+impl fmt::Display for CommitType<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_ref())
     }
@@ -274,17 +274,18 @@ mod test {
         let commit = ConventionalCommit {
             commit_type: CommitType::Feature,
             scope: None,
-            summary: "a feature".to_string(),
+            summary: "a feature",
             body: None,
             footers: Vec::with_capacity(0),
             is_breaking_change: false,
         };
 
-        let expected = "feat: a feature".to_string();
+        let expected = "feat: a feature";
+        let commit_str = commit.to_string();
 
-        assert_that(&commit.to_string()).is_equal_to(expected);
-        let parsed = parse(&commit.to_string());
-        assert_that(&parsed).is_ok().is_equal_to(commit);
+        assert_that!(commit_str.to_string()).is_equal_to(expected.to_string());
+        let parsed = parse(&commit_str);
+        assert_that!(parsed).is_ok().is_equal_to(commit);
     }
 
     #[test]
@@ -292,11 +293,11 @@ mod test {
         let commit = ConventionalCommit {
             commit_type: CommitType::Chore,
             scope: None,
-            summary: "a commit".to_string(),
+            summary: "a commit",
             body: None,
             footers: vec![Footer {
-                token: "BREAKING CHANGE".to_string(),
-                content: "message".to_string(),
+                token: "BREAKING CHANGE",
+                content: "message",
             }],
             is_breaking_change: true,
         };
@@ -306,11 +307,13 @@ mod test {
 
         BREAKING CHANGE: message"
         )
-        .to_string();
+        ;
 
-        assert_that(&commit.to_string()).is_equal_to(expected);
-        let parsed = parse(&commit.to_string());
-        assert_that(&parsed).is_ok().is_equal_to(commit);
+        let commit_str = commit.to_string();
+
+        assert_that!(commit_str.to_string()).is_equal_to(expected.to_string());
+        let parsed = parse(&commit_str);
+        assert_that!(parsed).is_ok().is_equal_to(commit);
     }
 
     #[test]
@@ -318,8 +321,8 @@ mod test {
         let commit = ConventionalCommit {
             commit_type: CommitType::Chore,
             scope: None,
-            summary: "a commit".to_string(),
-            body: Some("A breaking change body on\nmultiple lines".to_string()),
+            summary: "a commit",
+            body: Some("A breaking change body on\nmultiple lines"),
             footers: Vec::with_capacity(0),
             is_breaking_change: true,
         };
@@ -329,36 +332,37 @@ mod test {
 
             A breaking change body on
             multiple lines"
-        )
-        .to_string();
+        );
 
-        assert_that(&commit.to_string()).is_equal_to(expected);
-        let parsed = parse(&commit.to_string());
-        assert_that(&parsed).is_ok().is_equal_to(commit);
+        let commit_str = commit.to_string();
+
+        assert_that!(commit_str.to_string()).is_equal_to(expected.to_string());
+        let parsed = parse(&commit_str);
+        assert_that!(parsed).is_ok().is_equal_to(commit);
     }
 
     #[test]
     fn full_commit_to_string() {
         let commit = ConventionalCommit {
             commit_type: CommitType::BugFix,
-            scope: Some("code".to_string()),
-            summary: "correct minor typos in code".to_string(),
+            scope: Some("code"),
+            summary: "correct minor typos in code",
             body: Some(
                 indoc!(
                     "see the issue for details
 
         on typos fixed."
                 )
-                .to_string(),
+                ,
             ),
             footers: vec![
                 Footer {
-                    token: "Reviewed-by".to_string(),
-                    content: "Z".to_string(),
+                    token: "Reviewed-by",
+                    content: "Z",
                 },
                 Footer {
-                    token: "Refs".to_string(),
-                    content: "133".to_string(),
+                    token: "Refs",
+                    content: "133",
                 },
             ],
             is_breaking_change: false,
@@ -373,12 +377,12 @@ mod test {
 
         Reviewed-by: Z
         Refs: 133"
-        )
-        .to_string();
+        );
 
-        assert_that(&commit.to_string()).is_equal_to(expected);
-        let parsed = parse(&commit.to_string());
+        let commit_str = commit.to_string();
 
-        assert_that(&parsed).is_ok().is_equal_to(commit);
+        assert_that!(commit_str.to_string()).is_equal_to(expected.to_string());
+        let parsed = parse(&commit_str);
+        assert_that!(parsed).is_ok().is_equal_to(commit);
     }
 }

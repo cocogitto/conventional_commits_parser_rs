@@ -16,12 +16,12 @@ pub fn parse_footer_only() {
     // Assert
     assert_that(&parsed).is_ok().contains_all_of(&vec![
         &Footer {
-            token: "a-token".to_string(),
-            content: "this is a token".to_string(),
+            token: "a-token",
+            content: "this is a token",
         },
         &Footer {
-            token: "another-token".to_string(),
-            content: "this is a token with hash separator".to_string(),
+            token: "another-token",
+            content: "this is a token with hash separator",
         },
     ]);
 }

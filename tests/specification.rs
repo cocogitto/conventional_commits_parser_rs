@@ -223,8 +223,8 @@ fn commits_with_footer() {
     assert_contains_footer(
         parsed,
         Footer {
-            token: "a-token".to_string(),
-            content: "this is a token".to_string(),
+            token: "a-token",
+            content: "this is a token",
         },
     );
 }
@@ -248,15 +248,15 @@ fn commits_with_footers() {
     assert_contains_footer(
         parsed,
         Footer {
-            token: "a-token".to_string(),
-            content: "this is a token".to_string(),
+            token: "a-token",
+            content: "this is a token",
         },
     );
     assert_contains_footer(
         parsed,
         Footer {
-            token: "another-token".to_string(),
-            content: "this is a token with hash separator".to_string(),
+            token: "another-token",
+            content: "this is a token with hash separator",
         },
     );
 }
@@ -302,8 +302,8 @@ fn footer_with_breaking_change_ok() {
     assert_contains_footer(
         &parsed,
         Footer {
-            token: "BREAKING CHANGE".to_string(),
-            content: "message".to_string(),
+            token: "BREAKING CHANGE",
+            content: "message",
         },
     );
 
@@ -325,8 +325,8 @@ fn footer_with_no_body() {
     assert_contains_footer(
         &parsed,
         Footer {
-            token: "BREAKING CHANGE".to_string(),
-            content: "message".to_string(),
+            token: "BREAKING CHANGE",
+            content: "message",
         },
     );
 
@@ -352,20 +352,20 @@ fn footer_with_new_line() {
     assert_contains_footer(
         &parsed,
         Footer {
-            token: "BREAKING CHANGE".to_string(),
+            token: "BREAKING CHANGE",
             content: indoc!(
                 "a long message that describe a footer
     with multiple new line"
             )
-            .to_string(),
+            ,
         },
     );
 
     assert_contains_footer(
         &parsed,
         Footer {
-            token: "another-footer".to_string(),
-            content: "with content".to_string(),
+            token: "another-footer",
+            content: "with content",
         },
     );
 

@@ -19,17 +19,17 @@
 //! Reviewed-by: Z
 //! Refs #133"#;
 //!
-//! let conventional_commit = parse(message)?;
+//! let commit = parse(message)?;
 //!
-//! assert_eq!(conventional_commit.commit_type, CommitType::BugFix);
-//! assert_eq!(conventional_commit.summary, "correct minor typos in code".to_string());
-//! assert_eq!(conventional_commit.body, Some(r#"see the issue for details
+//! assert_eq!(commit.commit_type, CommitType::BugFix);
+//! assert_eq!(commit.summary, "correct minor typos in code");
+//! assert_eq!(commit.body, Some(r#"see the issue for details
 //!
-//! on typos fixed."#.to_string()));
+//! on typos fixed."#));
 //!
-//! assert_eq!(conventional_commit.footers, vec![
-//!     Footer {token: "Reviewed-by".to_string(), content: "Z".to_string()},
-//!     Footer {token: "Refs".to_string(), content: "133".to_string(),}
+//! assert_eq!(commit.footers, vec![
+//!     Footer {token: "Reviewed-by", content: "Z"},
+//!     Footer {token: "Refs", content: "133",}
 //! ]);
 //!
 //! # Ok(())
@@ -98,8 +98,8 @@ pub fn parse(commit_message: &str) -> Result<ConventionalCommit, ParseError> {
 ///
 /// assert_eq!(parsed, ConventionalCommit {
 ///     commit_type: CommitType::Feature,
-///     scope: Some("parser".to_string()),
-///     summary: "implement parse_summary".to_string(),
+///     scope: Some("parser"),
+///     summary: "implement parse_summary",
 ///     body: None,
 ///     footers: vec![],
 ///     is_breaking_change: false
@@ -166,8 +166,8 @@ pub fn parse_body(body: &str) -> Result<Option<String>, ParseError> {
 /// let parsed = parse_footers(footer).expect("Parse error");
 ///
 /// assert_eq!(parsed, vec![
-///     Footer { token: "a-token".to_string(), content: "this is a token".to_string() },
-///     Footer { token: "another-token".to_string(), content: "this is a token with hash separator".to_string() }
+///     Footer { token: "a-token", content: "this is a token" },
+///     Footer { token: "another-token", content: "this is a token with hash separator" }
 /// ]);
 /// # Ok(())
 /// # }

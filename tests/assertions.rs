@@ -9,7 +9,7 @@ pub fn assert_summary(res: &Result<ConventionalCommit, ParseError>, expected: &s
     assert_that(res)
         .is_ok()
         .map(|commit| &commit.summary)
-        .is_equal_to(expected.to_string());
+        .is_equal_to(expected);
 }
 
 pub fn assert_commit_type(res: &Result<ConventionalCommit, ParseError>, expected: CommitType) {
@@ -31,7 +31,7 @@ pub fn assert_scope(res: &Result<ConventionalCommit, ParseError>, expected: &str
         .is_ok()
         .map(|message| &message.scope)
         .is_some()
-        .is_equal_to(expected.to_string());
+        .is_equal_to(expected);
 }
 
 pub fn assert_breaking_change(res: &Result<ConventionalCommit, ParseError>) {
@@ -60,7 +60,7 @@ pub fn assert_body(res: &Result<ConventionalCommit, ParseError>, expected: &str)
         .is_ok()
         .map(|message| &message.body)
         .is_some()
-        .is_equal_to(expected.to_string());
+        .is_equal_to(expected);
 }
 
 pub fn assert_no_footers(res: &Result<ConventionalCommit, ParseError>) {
