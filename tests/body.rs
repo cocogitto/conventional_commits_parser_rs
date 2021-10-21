@@ -40,5 +40,8 @@ fn parse_body_only() {
     let parsed = conventional_commit_parser::parse_body(&body);
 
     // Assert
-    assert_that(&parsed).is_ok().is_some().is_equal_to(body);
+    assert_that(&parsed)
+        .is_ok()
+        .is_some()
+        .is_equal_to(body.as_str());
 }

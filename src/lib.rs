@@ -48,7 +48,7 @@ use pest::Parser;
 use crate::commit::{ConventionalCommit, Footer};
 use crate::error::ParseError;
 
-/// Conventional commit representation, produced by the [parse] function
+/// Conventional commit representation, produced by the [`parse`] function
 ///
 /// [parse]: crate::ConventionalCommitParser::parse
 pub mod commit;
@@ -133,10 +133,10 @@ pub fn parse_summary(summary: &str) -> Result<ConventionalCommit, ParseError> {
 ///
 /// let parsed = parse_body(body).expect("Parse error");
 ///
-/// assert_eq!(parsed, Some(body.to_string()));
+/// assert_eq!(parsed, Some(body));
 /// # Ok(())
 /// # }
-pub fn parse_body(body: &str) -> Result<Option<String>, ParseError> {
+pub fn parse_body(body: &str) -> Result<Option<&str>, ParseError> {
     let pair = ConventionalCommitParser::parse(Rule::body, body)
         .map_err(ParseError::from)?
         .next()
@@ -144,7 +144,7 @@ pub fn parse_body(body: &str) -> Result<Option<String>, ParseError> {
 
     let body = pair.as_str();
     if !body.is_empty() {
-        Ok(Some(body.to_string()))
+        Ok(Some(body))
     } else {
         Ok(None)
     }

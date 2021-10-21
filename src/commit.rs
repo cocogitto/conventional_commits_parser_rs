@@ -55,13 +55,13 @@ impl<'a> Footer<'a> {
     /// use conventional_commit_parser::commit::Footer;
     /// use std::ops::Not;
     /// let footer = Footer {
-    ///     token: "BREAKING CHANGE",content: "some changes were made",
+    ///     token: "BREAKING CHANGE", content: "some changes were made",
     /// };
     ///
     /// assert!(footer.is_breaking_change());
     ///
     /// let footer = Footer {
-    ///     token: "a-token",content: "Ref 133",
+    ///     token: "a-token", content: "Ref 133",
     /// };
     ///
     /// assert!(footer.is_breaking_change().not());
@@ -88,6 +88,41 @@ pub struct ConventionalCommit<'a> {
     pub footers: Vec<Footer<'a>>,
     /// A commit that has a footer `BREAKING CHANGE` or a `!` after the commit type and scope
     pub is_breaking_change: bool,
+}
+
+impl<'a> ConventionalCommit<'a> {
+    /// Return the breaking change token value if the commit contains a braking change token.
+    /// Returns the commit summary if the breaking change is indicated by an exclamation mark.
+    /// Otherwise None
+    /// ```rust
+    /// # fn main() {
+    /// use conventional_commit_parser::parse;
+    ///
+    /// let  commit = parse("feat!: something broke").unwrap();
+    ///
+    /// assert_eq!(commit.breaking_change_description(), Some("something broke"));
+    ///
+    /// let  commit = parse(r#"feat!: something broke
+    ///
+    /// BREAKING CHANGE #something broke"#).unwrap();
+    ///
+    /// assert_eq!(commit.breaking_change_description(), Some("something broke"));
+    ///
+    /// let  commit = parse("feat: a normal commit").unwrap();
+    ///
+    /// assert_eq!(commit.breaking_change_description(), None);
+    /// # }
+    pub fn breaking_change_description(&self) -> Option<&'a str> {
+        if self.is_breaking_change {
+            self.footers
+                .iter()
+                .find(|footer| footer.is_breaking_change())
+                .map(|footer| footer.content)
+                .or(Some(self.summary))
+        } else {
+            None
+        }
+    }
 }
 
 impl<'a> From<Pair<'a, Rule>> for Footer<'a> {
@@ -147,7 +182,7 @@ impl<'a> ConventionalCommit<'a> {
         };
     }
 
-    pub fn set_commit_type(&mut self, pair: &Pair<'a, Rule>) {
+    fn set_commit_type(&mut self, pair: &Pair<'a, Rule>) {
         let commit_type = pair.as_str();
         let commit_type = CommitType::from(commit_type);
         self.commit_type = commit_type;
