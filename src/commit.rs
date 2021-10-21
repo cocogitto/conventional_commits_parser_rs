@@ -40,7 +40,7 @@ pub enum CommitType<'a> {
 
 /// One or more footers MAY be provided one blank line after the body. Each footer MUST consist of
 /// a word token, followed by either a :<space> or <space># separator, followed by a string value.
-#[derive(Debug, Eq, PartialEq, Default)]
+#[derive(Debug, PartialEq, Default, Clone)]
 pub struct Footer<'a> {
     /// The footer token, either BREAKING CHANGE or a work token
     pub token: &'a str,
@@ -74,7 +74,7 @@ impl<'a> Footer<'a> {
 /// A conventional commit compliant commit message produced by the [parse] function
 ///
 /// [parse]: crate::ConventionalCommitParser::parse
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ConventionalCommit<'a> {
     /// The commit type, `fix`, `feat` etc.
     pub commit_type: CommitType<'a>,
