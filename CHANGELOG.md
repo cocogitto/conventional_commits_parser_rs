@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.1 - 2021-10-21
+
+
+### Bug Fixes
+
+[b89691](https://github.com/oknozor/conventional_commits_parser_rs/commit/b89691d78f404e8c4d7ad054c9f69939bcf5ac8e) - add clone impl on ConventionalCommit - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.6.0 - 2021-10-21
 
 
