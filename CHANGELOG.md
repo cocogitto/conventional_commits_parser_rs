@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.7.1 - 2021-10-22
+
+
+### Bug Fixes
+
+[1ff1ae](https://github.com/oknozor/conventional_commits_parser_rs/commit/1ff1ae14d0dcfeecf0e3f8bd2f06f1928b45803e) - add Eq impl to conventional commit - [oknozor](https://github.com/oknozor)
+
+
+- - -
 ## 0.7.0 - 2021-10-21
 
 
