@@ -1,8 +1,10 @@
-github = "https://github.com/oknozor/conventional_commits_parser_rs"
 
+[changelog]
 authors = [
     { signature = "Paul Delafosse", username = "oknozor" },
 ]
+github = "https://github.com/oknozor/conventional_commits_parser_rs"
+
 changelog_path = "CHANGELOG.md"
 
 pre_bump_hooks = [
