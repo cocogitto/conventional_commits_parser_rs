@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+- - -## Unreleased ([cb20195..b0a509a](https://github.com/oknozor/conventional_commits_parser_rs/compare/cb20195..b0a509a))
+#### Features
+- expose footer token separator - ([b0a509a](https://github.com/oknozor/conventional_commits_parser_rs/commit/b0a509aa190ba30178a56bd309d4f736989ba036)) - [@oknozor](https://github.com/@oknozor)
 - - -
 ## 0.5.2 - 2021-10-19
 
