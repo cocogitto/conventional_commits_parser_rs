@@ -46,22 +46,52 @@ pub struct Footer {
     pub token: String,
     /// A string value holding the footer message
     pub content: String,
+    /// Footer token separator kind, either "#" or ":"
+    pub token_separator: Separator,
+}
+
+/// Footer token separator the "#" separator is
+/// often use to reference github issues.
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub enum Separator {
+    Colon,
+    Hash,
+}
+
+impl From<&str> for Separator {
+    fn from(separator: &str) -> Self {
+        match separator {
+            ": " => Separator::Colon,
+            " #" => Separator::Hash,
+            other => unreachable!("Unexpected footer token separator : `{}`", other),
+        }
+    }
+}
+
+impl Default for Separator {
+    fn default() -> Self {
+        Separator::Colon
+    }
 }
 
 impl Footer {
     /// Return true if a footer as the breaking change token
     /// ```rust
     /// # fn main() {
-    /// use conventional_commit_parser::commit::Footer;
+    /// use conventional_commit_parser::commit::{Footer, Separator};
     /// use std::ops::Not;
     /// let footer = Footer {
-    ///     token: "BREAKING CHANGE".to_string(),content: "some changes were made".to_string(),
+    ///     token: "BREAKING CHANGE".to_string(),
+    ///     content: "some changes were made".to_string(),
+    ///     ..Default::default()
     /// };
     ///
     /// assert!(footer.is_breaking_change());
     ///
     /// let footer = Footer {
-    ///     token: "a-token".to_string(),content: "Ref 133".to_string(),
+    ///     token: "a-token".to_string(),
+    ///     content: "Ref 133".to_string(),
+    ///     ..Default::default()
     /// };
     ///
     /// assert!(footer.is_breaking_change().not());
@@ -94,10 +124,15 @@ impl From<Pair<'_, Rule>> for Footer {
     fn from(pairs: Pair<'_, Rule>) -> Self {
         let mut pair = pairs.into_inner();
         let token = pair.next().unwrap().as_str().to_string();
-        let _separator = pair.next().unwrap();
+        let separator = pair.next().unwrap().as_str();
+        let token_separator = Separator::from(separator);
         let content = pair.next().unwrap().as_str().to_string();
 
-        Footer { token, content }
+        Footer {
+            token,
+            content,
+            token_separator,
+        }
     }
 }
 
@@ -246,9 +281,16 @@ impl ToString for ConventionalCommit {
             message.push('\n');
         }
 
-        self.footers.iter().for_each(|footer| {
-            message.push_str(&format!("\n{}: {}", footer.token, footer.content))
-        });
+        self.footers
+            .iter()
+            .for_each(|footer| match footer.token_separator {
+                Separator::Colon => {
+                    message.push_str(&format!("\n{}: {}", footer.token, footer.content))
+                }
+                Separator::Hash => {
+                    message.push_str(&format!("\n{} #{}", footer.token, footer.content))
+                }
+            });
 
         message
     }
@@ -266,7 +308,7 @@ mod test {
     use spectral::assert_that;
     use spectral::prelude::ResultAssertions;
 
-    use crate::commit::{CommitType, ConventionalCommit, Footer};
+    use crate::commit::{CommitType, ConventionalCommit, Footer, Separator};
     use crate::parse;
 
     #[test]
@@ -297,6 +339,7 @@ mod test {
             footers: vec![Footer {
                 token: "BREAKING CHANGE".to_string(),
                 content: "message".to_string(),
+                ..Default::default()
             }],
             is_breaking_change: true,
         };
@@ -355,10 +398,12 @@ mod test {
                 Footer {
                     token: "Reviewed-by".to_string(),
                     content: "Z".to_string(),
+                    ..Default::default()
                 },
                 Footer {
                     token: "Refs".to_string(),
                     content: "133".to_string(),
+                    token_separator: Separator::Hash,
                 },
             ],
             is_breaking_change: false,
@@ -372,7 +417,7 @@ mod test {
         on typos fixed.
 
         Reviewed-by: Z
-        Refs: 133"
+        Refs #133"
         )
         .to_string();
 

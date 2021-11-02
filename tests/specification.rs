@@ -7,7 +7,7 @@
 //     If ! is used, BREAKING CHANGE: MAY be omitted from the footer section, and the commit description
 //     SHALL be used to describe the breaking change.
 // 14. Types other than feat and fix MAY be used in your commit messages, e.g., docs: updated ref docs.
-use conventional_commit_parser::commit::{CommitType, Footer};
+use conventional_commit_parser::commit::{CommitType, Footer, Separator};
 use conventional_commit_parser::parse;
 use indoc::indoc;
 
@@ -225,6 +225,7 @@ fn commits_with_footer() {
         Footer {
             token: "a-token".to_string(),
             content: "this is a token".to_string(),
+            ..Default::default()
         },
     );
 }
@@ -250,6 +251,7 @@ fn commits_with_footers() {
         Footer {
             token: "a-token".to_string(),
             content: "this is a token".to_string(),
+            ..Default::default()
         },
     );
     assert_contains_footer(
@@ -257,6 +259,7 @@ fn commits_with_footers() {
         Footer {
             token: "another-token".to_string(),
             content: "this is a token with hash separator".to_string(),
+            token_separator: Separator::Hash,
         },
     );
 }
@@ -304,6 +307,7 @@ fn footer_with_breaking_change_ok() {
         Footer {
             token: "BREAKING CHANGE".to_string(),
             content: "message".to_string(),
+            ..Default::default()
         },
     );
 
@@ -327,6 +331,7 @@ fn footer_with_no_body() {
         Footer {
             token: "BREAKING CHANGE".to_string(),
             content: "message".to_string(),
+            ..Default::default()
         },
     );
 
@@ -358,6 +363,7 @@ fn footer_with_new_line() {
     with multiple new line"
             )
             .to_string(),
+            ..Default::default()
         },
     );
 
@@ -366,6 +372,7 @@ fn footer_with_new_line() {
         Footer {
             token: "another-footer".to_string(),
             content: "with content".to_string(),
+            ..Default::default()
         },
     );
 

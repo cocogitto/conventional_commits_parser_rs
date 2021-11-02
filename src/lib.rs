@@ -28,8 +28,16 @@
 //! on typos fixed."#.to_string()));
 //!
 //! assert_eq!(conventional_commit.footers, vec![
-//!     Footer {token: "Reviewed-by".to_string(), content: "Z".to_string()},
-//!     Footer {token: "Refs".to_string(), content: "133".to_string(),}
+//!     Footer {
+//!         token: "Reviewed-by".to_string(),
+//!         content: "Z".to_string(),
+//!         token_separator: Separator::Colon
+//!     },
+//!     Footer {
+//!         token: "Refs".to_string(),
+//!         content: "133".to_string(),
+//!         token_separator: Separator::Hash
+//!     }
 //! ]);
 //!
 //! # Ok(())
@@ -166,8 +174,16 @@ pub fn parse_body(body: &str) -> Result<Option<String>, ParseError> {
 /// let parsed = parse_footers(footer).expect("Parse error");
 ///
 /// assert_eq!(parsed, vec![
-///     Footer { token: "a-token".to_string(), content: "this is a token".to_string() },
-///     Footer { token: "another-token".to_string(), content: "this is a token with hash separator".to_string() }
+///     Footer {
+///         token: "a-token".to_string(),
+///         content: "this is a token".to_string(),
+///         token_separator: Separator::Colon
+///     },
+///     Footer {
+///         token: "another-token".to_string(),
+///         content: "this is a token with hash separator".to_string(),
+///         token_separator: Separator::Hash
+///     }
 /// ]);
 /// # Ok(())
 /// # }

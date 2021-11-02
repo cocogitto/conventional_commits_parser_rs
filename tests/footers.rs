@@ -1,4 +1,4 @@
-use conventional_commit_parser::commit::Footer;
+use conventional_commit_parser::commit::{Footer, Separator};
 use indoc::indoc;
 use spectral::prelude::*;
 
@@ -7,7 +7,7 @@ pub fn parse_footer_only() {
     // Arrange
     let footers = indoc!(
         "a-token: this is a token
-    another-token #this is a token with hash separator"
+        another-token #this is a token with hash separator"
     );
 
     // Act
@@ -18,10 +18,12 @@ pub fn parse_footer_only() {
         &Footer {
             token: "a-token".to_string(),
             content: "this is a token".to_string(),
+            ..Default::default()
         },
         &Footer {
             token: "another-token".to_string(),
             content: "this is a token with hash separator".to_string(),
+            token_separator: Separator::Hash,
         },
     ]);
 }
