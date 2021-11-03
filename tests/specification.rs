@@ -1,5 +1,7 @@
 // These parts of the specification depends on the end user and are no testable on our side
 
+use indoc::indoc;
+
 // 2. The type feat MUST be used when a commit adds a new feature to your application or library.
 // 3. The type fix MUST be used when a commit represents a bug fix for your application.
 // 11. Breaking changes MUST be indicated in the type/scope prefix of a commit, or as an entry in the footer.
@@ -8,13 +10,12 @@
 //     SHALL be used to describe the breaking change.
 // 14. Types other than feat and fix MAY be used in your commit messages, e.g., docs: updated ref docs.
 use conventional_commit_parser::commit::{CommitType, Footer, Separator};
+use conventional_commit_parser::error::ParseErrorKind;
 use conventional_commit_parser::parse;
-use indoc::indoc;
-
-mod assertions;
 
 use crate::assertions::*;
-use conventional_commit_parser::error::ParseErrorKind;
+
+mod assertions;
 
 // 1. Commits MUST be prefixed with a type, which consists of a noun, feat, fix, etc., followed by
 // the OPTIONAL scope, OPTIONAL !, and REQUIRED terminal colon and space.
@@ -220,6 +221,8 @@ fn commits_with_footer() {
     let parsed = &parse(commit_message);
 
     // Assert
+    assert_body(&parsed, "This is a body");
+
     assert_contains_footer(
         parsed,
         Footer {
@@ -269,7 +272,7 @@ fn commits_with_footers() {
 // BREAKING CHANGE, which MAY also be used as a token.
 
 #[test]
-fn footer_with_whitespace_token_fail() {
+fn footer_with_whitespace_token_is_parsed_as_body() {
     // Arrange
     let commit_message = indoc!(
         "chore: a commit
@@ -283,10 +286,7 @@ fn footer_with_whitespace_token_fail() {
     let result = parse(commit_message);
 
     // Assert
-    assert_error(
-        &result,
-        ParseErrorKind::MalformedOrUnexpectedFooterSeparator,
-    );
+    assert_body(&result, "This is a body\n\ninvalid token : this is a token");
 }
 
 #[test]
@@ -382,7 +382,7 @@ fn footer_with_new_line() {
 // 12. If included as a footer, a breaking change MUST consist of the uppercase text BREAKING CHANGE,
 // followed by a colon, space, and description, e.g., BREAKING CHANGE: environment variables now take precedence over config files.
 #[test]
-fn lower_case_breaking_change_footer_fails() {
+fn lower_case_breaking_change_footer_is_parsed_as_body() {
     // Arrange
     let commit_message = indoc!(
         "chore: a commit
@@ -396,10 +396,7 @@ fn lower_case_breaking_change_footer_fails() {
     let result = parse(commit_message);
 
     // Assert
-    assert_error(
-        &result,
-        ParseErrorKind::MalformedOrUnexpectedFooterSeparator,
-    );
+    assert_body(&result, "the body\n\nbreaking change: oops");
 }
 
 // 15. The units of information that make up Conventional Commits MUST NOT be treated as case sensitive
@@ -429,4 +426,58 @@ fn breaking_change_with_dash() {
     let parsed = parse(commit_message);
 
     assert_breaking_change(&parsed);
+}
+
+#[test]
+fn should_parse_dependabot_commit() {
+    // Arrange
+    let commit_message = indoc!(
+        "chore(deps): bump spring-boot-starter-parent from 2.5.5 to 2.5.6
+        Bumps [spring-boot-starter-parent](https://github.com/spring-projects/spring-boot) from 2.5.5 to 2.5.6.
+        - [Release notes](https://github.com/spring-projects/spring-boot/releases)
+        - [Commits](spring-projects/spring-boot@v2.5.5...v2.5.6)
+
+        ---
+        updated-dependencies:
+        - dependency-name: org.springframework.boot:spring-boot-starter-parent
+          dependency-type: direct:production
+          update-type: version-update:semver-patch
+        ...
+
+        Signed-off-by: dependabot[bot] <support@github.com>"
+    );
+
+    let parsed = parse(commit_message);
+
+    assert_commit_type(&parsed, CommitType::Chore);
+    assert_scope(&parsed, "deps");
+    assert_body(&parsed, indoc!("Bumps [spring-boot-starter-parent](https://github.com/spring-projects/spring-boot) from 2.5.5 to 2.5.6.
+                            - [Release notes](https://github.com/spring-projects/spring-boot/releases)
+                            - [Commits](spring-projects/spring-boot@v2.5.5...v2.5.6)
+
+                            ---"));
+
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "updated-dependencies".to_string(),
+            content: indoc!(
+                "- dependency-name: org.springframework.boot:spring-boot-starter-parent
+                          dependency-type: direct:production
+                          update-type: version-update:semver-patch
+                        ..."
+            )
+            .to_string(),
+            token_separator: Separator::ColonWithNewLine,
+        },
+    );
+
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "Signed-off-by".to_string(),
+            content: "dependabot[bot] <support@github.com>".to_string(),
+            token_separator: Separator::Colon,
+        },
+    );
 }

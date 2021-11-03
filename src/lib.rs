@@ -150,7 +150,7 @@ pub fn parse_body(body: &str) -> Result<Option<String>, ParseError> {
         .next()
         .unwrap();
 
-    let body = pair.as_str();
+    let body = pair.as_str().trim();
     if !body.is_empty() {
         Ok(Some(body.to_string()))
     } else {

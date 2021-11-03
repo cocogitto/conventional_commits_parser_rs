@@ -55,6 +55,7 @@ pub struct Footer {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Separator {
     Colon,
+    ColonWithNewLine,
     Hash,
 }
 
@@ -63,6 +64,7 @@ impl From<&str> for Separator {
         match separator {
             ": " => Separator::Colon,
             " #" => Separator::Hash,
+            ":\n" => Separator::ColonWithNewLine,
             other => unreachable!("Unexpected footer token separator : `{}`", other),
         }
     }
@@ -126,7 +128,7 @@ impl From<Pair<'_, Rule>> for Footer {
         let token = pair.next().unwrap().as_str().to_string();
         let separator = pair.next().unwrap().as_str();
         let token_separator = Separator::from(separator);
-        let content = pair.next().unwrap().as_str().to_string();
+        let content = pair.next().unwrap().as_str().to_string().trim().to_string();
 
         Footer {
             token,
@@ -189,7 +191,7 @@ impl ConventionalCommit {
     }
 
     pub(crate) fn set_commit_body(&mut self, pair: Pair<Rule>) {
-        let body = pair.as_str();
+        let body = pair.as_str().trim();
         if !body.is_empty() {
             self.body = Some(body.to_string())
         }
@@ -289,6 +291,9 @@ impl ToString for ConventionalCommit {
                 }
                 Separator::Hash => {
                     message.push_str(&format!("\n{} #{}", footer.token, footer.content))
+                }
+                Separator::ColonWithNewLine => {
+                    message.push_str(&format!("\n{}:\n{}", footer.token, footer.content))
                 }
             });
 
