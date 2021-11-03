@@ -49,7 +49,7 @@ extern crate pest_derive;
 
 #[cfg(test)]
 #[macro_use]
-extern crate spectral;
+extern crate speculoos;
 
 use pest::Parser;
 

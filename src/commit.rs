@@ -305,8 +305,8 @@ impl fmt::Display for CommitType {
 #[cfg(test)]
 mod test {
     use indoc::indoc;
-    use spectral::assert_that;
-    use spectral::prelude::ResultAssertions;
+    use speculoos::assert_that;
+    use speculoos::prelude::ResultAssertions;
 
     use crate::commit::{CommitType, ConventionalCommit, Footer, Separator};
     use crate::parse;

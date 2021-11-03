@@ -2,7 +2,7 @@
 
 use conventional_commit_parser::commit::{CommitType, ConventionalCommit, Footer};
 use conventional_commit_parser::error::{ParseError, ParseErrorKind};
-use spectral::prelude::*;
+use speculoos::prelude::*;
 use std::fmt::Debug;
 
 pub fn assert_summary(res: &Result<ConventionalCommit, ParseError>, expected: &str) {

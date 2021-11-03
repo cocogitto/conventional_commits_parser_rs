@@ -1,6 +1,6 @@
 use conventional_commit_parser::commit::{Footer, Separator};
 use indoc::indoc;
-use spectral::prelude::*;
+use speculoos::prelude::*;
 
 #[test]
 pub fn parse_footer_only() {

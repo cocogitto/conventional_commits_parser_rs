@@ -1,5 +1,5 @@
 use indoc::indoc;
-use spectral::prelude::*;
+use speculoos::prelude::*;
 
 use conventional_commit_parser::error::ParseErrorKind;
 use conventional_commit_parser::parse_body;
