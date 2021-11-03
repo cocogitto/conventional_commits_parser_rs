@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+- - -
+## 0.9.1 - 2021-11-03
+
+
+### Bug Fixes
+
+bf7237 - allow multiline footer content - Paul Delafosse
+
+
+### Miscellaneous Chores
+
+e3a2e8 - use speculoos for test assertions - Paul Delafosse
+
+
 - - -## Unreleased ([cb20195..b0a509a](https://github.com/oknozor/conventional_commits_parser_rs/compare/cb20195..b0a509a))
 #### Features
 - expose footer token separator - ([b0a509a](https://github.com/oknozor/conventional_commits_parser_rs/commit/b0a509aa190ba30178a56bd309d4f736989ba036)) - [@oknozor](https://github.com/@oknozor)
