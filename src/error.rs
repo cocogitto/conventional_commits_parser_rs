@@ -15,6 +15,7 @@ pub enum ParseErrorKind {
     MissingSeparator,
     MissingWhiteSpace,
     UnexpectedParenthesis,
+    UnexpectedWhitespaceOrNewLine,
     MalformedScope,
     MalformedOrUnexpectedFooterSeparator,
     Other,
@@ -28,7 +29,10 @@ impl AsRef<str> for ParseErrorKind {
                 "Missing whitespace terminal after commit type separator `:`"
             }
             ParseErrorKind::UnexpectedParenthesis => {
-                "A scope value cannot contains inner parenthesis"
+                "A scope value must not contains inner parenthesis"
+            }
+            ParseErrorKind::UnexpectedWhitespaceOrNewLine => {
+                "A scope value must not contain whitespace or new line"
             }
             ParseErrorKind::MalformedScope => "Malformed commit scope",
             ParseErrorKind::MalformedOrUnexpectedFooterSeparator => {
@@ -60,6 +64,8 @@ impl From<PestError<Rule>> for ParseError {
                     ParseErrorKind::MissingSeparator
                 } else if positives.contains(&Rule::no_parenthesis) {
                     ParseErrorKind::UnexpectedParenthesis
+                } else if positives.contains(&Rule::no_whitespace) {
+                    ParseErrorKind::UnexpectedWhitespaceOrNewLine
                 } else if positives.contains(&Rule::whitespace_terminal) {
                     ParseErrorKind::MissingWhiteSpace
                 } else if positives.contains(&Rule::scope_content) {

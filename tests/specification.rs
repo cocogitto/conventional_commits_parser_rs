@@ -170,7 +170,19 @@ fn scope_with_inner_new_line_should_fail() {
     let result = parse(commit_message);
 
     // Assert
-    assert_error(&result, ParseErrorKind::MalformedScope);
+    assert_error(&result, ParseErrorKind::UnexpectedWhitespaceOrNewLine);
+}
+
+#[test]
+fn scope_with_whitespace_should_fail() {
+    // Arrange
+    let commit_message = "chore(hello world): a commit";
+
+    // Act
+    let parsed = parse(commit_message);
+
+    // Assert
+    assert_error(&parsed, ParseErrorKind::UnexpectedWhitespaceOrNewLine);
 }
 
 // 6. A longer commit body MAY be provided after the short description, providing additional contextual
@@ -423,8 +435,10 @@ fn breaking_change_with_dash() {
     BREAKING-CHANGE: message"
     );
 
+    // Act
     let parsed = parse(commit_message);
 
+    // Assert
     assert_breaking_change(&parsed);
 }
 
@@ -447,8 +461,10 @@ fn should_parse_dependabot_commit() {
         Signed-off-by: dependabot[bot] <support@github.com>"
     );
 
+    // Act
     let parsed = parse(commit_message);
 
+    // Assert
     assert_commit_type(&parsed, CommitType::Chore);
     assert_scope(&parsed, "deps");
     assert_body(&parsed, indoc!("Bumps [spring-boot-starter-parent](https://github.com/spring-projects/spring-boot) from 2.5.5 to 2.5.6.
