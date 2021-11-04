@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.9.2 - 2021-11-04
+
+
+### Bug Fixes
+
+0015e7 - scope with whitespace fail to parse - Paul Delafosse
+
+
+- - -
 ## 0.9.1 - 2021-11-03
 
 
