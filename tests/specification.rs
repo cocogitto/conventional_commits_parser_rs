@@ -517,15 +517,21 @@ fn should_parse_interactively_rebased_commit() {
     // Assert
     assert_commit_type(&parsed, CommitType::Feature);
     assert_scope(&parsed, "References");
-    assert_body(&parsed, indoc!(
-        "* feat(References): add new fields in ReferenceWithAlert
+    assert_body(
+        &parsed,
+        indoc!(
+            "* feat(References): add new fields in ReferenceWithAlert
 
         * feat(PortOfLoading): add unit test"
-    ));
+        ),
+    );
 
-    assert_contains_footer(&parsed, Footer {
-        token: "footer".to_string(),
-        content: "value".to_string(),
-        token_separator: Separator::Colon
-    });
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "footer".to_string(),
+            content: "value".to_string(),
+            token_separator: Separator::Colon,
+        },
+    );
 }

@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.9.3](https://github.com/oknozor/conventional_commits_parser_rs/compare/0.9.2..0.9.3) - 2021-11-21
+#### Bug Fixes
+- add clone impl for ParseError - ([69ec82f](https://github.com/oknozor/conventional_commits_parser_rs/commit/69ec82f30f3f50bbb0b82080742b2173c11984e7)) - [@oknozor](https://github.com/oknozor)
+#### Miscellaneous Chores
+- update cog.toml - ([4e7e5ea](https://github.com/oknozor/conventional_commits_parser_rs/commit/4e7e5ea819d7dbe4fe2658a676f780893148c35c)) - [@oknozor](https://github.com/oknozor)
+- - -
+
 ## 0.9.2 - 2021-11-04
 
 
