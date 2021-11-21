@@ -497,3 +497,35 @@ fn should_parse_dependabot_commit() {
         },
     );
 }
+
+#[test]
+fn should_parse_interactively_rebased_commit() {
+    // Arrange
+    let commit_message = indoc!(
+        "feat(References): add new fields in ReferenceWithAlert (#8)
+
+        * feat(References): add new fields in ReferenceWithAlert
+
+        * feat(PortOfLoading): add unit test
+
+        footer: value"
+    );
+
+    // Act
+    let parsed = parse(commit_message);
+
+    // Assert
+    assert_commit_type(&parsed, CommitType::Feature);
+    assert_scope(&parsed, "References");
+    assert_body(&parsed, indoc!(
+        "* feat(References): add new fields in ReferenceWithAlert
+
+        * feat(PortOfLoading): add unit test"
+    ));
+
+    assert_contains_footer(&parsed, Footer {
+        token: "footer".to_string(),
+        content: "value".to_string(),
+        token_separator: Separator::Colon
+    });
+}

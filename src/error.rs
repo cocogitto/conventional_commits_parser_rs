@@ -3,14 +3,14 @@ use pest::error::Error as PestError;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ParseError {
     pub inner: PestError<Rule>,
     pub kind: ParseErrorKind,
 }
 
 /// Common conventional commit formatting errors are wrapped in this struct to produce an additional hint
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum ParseErrorKind {
     MissingSeparator,
     MissingWhiteSpace,
