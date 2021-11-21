@@ -15,7 +15,8 @@ post_bump_hooks = [
 
 [changelog]
 path = "CHANGELOG.md"
-github = true
+template = "remote"
+remote = "github.com"
 owner = "oknozor"
 repository = "conventional_commits_parser_rs"
 authors = [
