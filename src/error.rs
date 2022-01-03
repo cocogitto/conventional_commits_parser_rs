@@ -18,6 +18,7 @@ pub enum ParseErrorKind {
     UnexpectedWhitespaceOrNewLine,
     MalformedScope,
     MalformedOrUnexpectedFooterSeparator,
+    DescriptionStartingWithUppercase,
     Other,
 }
 
@@ -38,6 +39,9 @@ impl AsRef<str> for ParseErrorKind {
             ParseErrorKind::MalformedOrUnexpectedFooterSeparator => {
                 "Either token separator (` #` or `: `) \
             \nis missing from the footer or a footer was not expected at this point"
+            }
+            ParseErrorKind::DescriptionStartingWithUppercase => {
+                "Malformed commit description: message should start with a lowercase letter"
             }
             ParseErrorKind::Other => "Parse error",
         }
@@ -72,6 +76,8 @@ impl From<PestError<Rule>> for ParseError {
                     ParseErrorKind::MalformedScope
                 } else if positives.contains(&Rule::token_separator) {
                     ParseErrorKind::MalformedOrUnexpectedFooterSeparator
+                } else if positives.contains(&Rule::summary_content) {
+                    ParseErrorKind::DescriptionStartingWithUppercase
                 } else {
                     ParseErrorKind::Other
                 }

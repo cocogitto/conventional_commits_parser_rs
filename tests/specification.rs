@@ -535,3 +535,15 @@ fn should_parse_interactively_rebased_commit() {
         },
     );
 }
+
+#[test]
+fn description_with_sentence_case_should_fail() {
+    // Arrange
+    let commit_message = "feat: Toto va à la plage";
+
+    // Act
+    let parsed = parse(commit_message);
+
+    // Assert
+    assert_error(&parsed, ParseErrorKind::DescriptionStartingWithUppercase);
+}
