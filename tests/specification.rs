@@ -526,12 +526,16 @@ fn should_parse_dependabot_commit_2() {
     // Assert
     assert_commit_type(&parsed, CommitType::Chore);
     assert_scope(&parsed, "deps");
-    assert_body(&parsed, indoc!(
-        "Bumps [archunit-junit5-engine](https://github.com/TNG/ArchUnit) from 0.21.0 to 0.22.0.
+    assert_body(
+        &parsed,
+        indoc!(
+            "Bumps [archunit-junit5-engine](https://github.com/TNG/ArchUnit) from 0.21.0 to 0.22.0.
         - [Release notes](https://github.com/TNG/ArchUnit/releases)
         - [Commits](https://github.com/TNG/ArchUnit/compare/v0.21.0...v0.22.0)
         
-        ---"));
+        ---"
+        ),
+    );
 
     assert_contains_footer(
         &parsed,

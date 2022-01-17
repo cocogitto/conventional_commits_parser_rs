@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.9.4](https://github.com/oknozor/conventional_commits_parser_rs/compare/0.9.3..0.9.4) - 2022-01-17
+#### Bug Fixes
+- handle windows new lines escape sequence in footer separators - ([1df053f](https://github.com/oknozor/conventional_commits_parser_rs/commit/1df053fb3133ca36ca4127cf48231bf7c77b3d33)) - [@oknozor](https://github.com/oknozor)
+#### Tests
+- add reproducer test for #cocogitto/169 - ([2263236](https://github.com/oknozor/conventional_commits_parser_rs/commit/22632366d71819ad8cfa7bff82a2ac290686c043)) - [@oknozor](https://github.com/oknozor)
+- - -
+
 ## [0.9.3](https://github.com/oknozor/conventional_commits_parser_rs/compare/0.9.2..0.9.3) - 2021-11-21
 #### Bug Fixes
 - add clone impl for ParseError - ([69ec82f](https://github.com/oknozor/conventional_commits_parser_rs/commit/69ec82f30f3f50bbb0b82080742b2173c11984e7)) - [@oknozor](https://github.com/oknozor)
