@@ -499,6 +499,75 @@ fn should_parse_dependabot_commit() {
 }
 
 #[test]
+fn should_parse_dependabot_commit_2() {
+    // Arrange
+    let commit_message = indoc!(
+        "chore(deps): bump archunit-junit5-engine from 0.21.0 to 0.22.0 (#11)
+
+        Bumps [archunit-junit5-engine](https://github.com/TNG/ArchUnit) from 0.21.0 to 0.22.0.
+        - [Release notes](https://github.com/TNG/ArchUnit/releases)
+        - [Commits](https://github.com/TNG/ArchUnit/compare/v0.21.0...v0.22.0)
+        
+        ---
+        updated-dependencies:
+        - dependency-name: com.tngtech.archunit:archunit-junit5-engine
+          dependency-type: direct:production
+          update-type: version-update:semver-minor
+        ...
+        
+        Signed-off-by: dependabot[bot] <support@github.com>
+        
+        Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+        Co-authored-by: guillaumer63 <74533647+guillaumer63@users.noreply.github.com>"
+    );
+
+    // Act
+    let parsed = parse(commit_message);
+
+    // Assert
+    assert_commit_type(&parsed, CommitType::Chore);
+    assert_scope(&parsed, "deps");
+    assert_body(&parsed, indoc!(
+        "Bumps [archunit-junit5-engine](https://github.com/TNG/ArchUnit) from 0.21.0 to 0.22.0.
+        - [Release notes](https://github.com/TNG/ArchUnit/releases)
+        - [Commits](https://github.com/TNG/ArchUnit/compare/v0.21.0...v0.22.0)
+        
+        ---"));
+
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "updated-dependencies".to_string(),
+            content: indoc!(
+                "- dependency-name: com.tngtech.archunit:archunit-junit5-engine
+                  dependency-type: direct:production
+                  update-type: version-update:semver-minor
+                ..."
+            )
+            .to_string(),
+            token_separator: Separator::ColonWithNewLine,
+        },
+    );
+
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "Signed-off-by".to_string(),
+            content: "dependabot[bot] <support@github.com>".to_string(),
+            token_separator: Separator::Colon,
+        },
+    );
+    assert_contains_footer(
+        &parsed,
+        Footer {
+            token: "Co-authored-by".to_string(),
+            content: "guillaumer63 <74533647+guillaumer63@users.noreply.github.com>".to_string(),
+            token_separator: Separator::Colon,
+        },
+    );
+}
+
+#[test]
 fn should_parse_interactively_rebased_commit() {
     // Arrange
     let commit_message = indoc!(
