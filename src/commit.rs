@@ -64,7 +64,7 @@ impl From<&str> for Separator {
         match separator {
             ": " => Separator::Colon,
             " #" => Separator::Hash,
-            ":\n" => Separator::ColonWithNewLine,
+            ":\n" | ":\r" | ":\r\n" => Separator::ColonWithNewLine,
             other => unreachable!("Unexpected footer token separator : `{}`", other),
         }
     }

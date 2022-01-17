@@ -509,8 +509,7 @@ fn should_parse_dependabot_commit_2() {
         - [Commits](https://github.com/TNG/ArchUnit/compare/v0.21.0...v0.22.0)
         
         ---
-        updated-dependencies:
-        - dependency-name: com.tngtech.archunit:archunit-junit5-engine
+        updated-dependencies:\r- dependency-name: com.tngtech.archunit:archunit-junit5-engine
           dependency-type: direct:production
           update-type: version-update:semver-minor
         ...
