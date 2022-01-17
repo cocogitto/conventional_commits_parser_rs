@@ -1,4 +1,4 @@
-summary_content = { (!NEWLINE ~ ANY)+ }
+summary_content = { LOWERCASE ~ (!NEWLINE ~ ANY)+ }
 
 message = { SOI ~ summary ~ (blank_line* ~ (footers | (body ~ blank_line+ ~ footers) | body))? ~ EOI }
 
